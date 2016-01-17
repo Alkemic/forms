@@ -1,10 +1,8 @@
 package forms
 
 import (
-	// "errors"
 	"fmt"
 	"net/url"
-	// "regexp"
 )
 
 type CleanedData map[string]interface{}
@@ -26,17 +24,22 @@ func (f *Form) Clear() {
 	}
 }
 
-// func (f *Form) IsValid(data map[string]string) bool {
 func (f *Form) IsValid(data url.Values) (isValid bool) {
 	f.Clear()
+	cleanedData := CleanedData{}
 
 	for name, field := range f.Fields {
 		values, _ := data[name]
-		// if !exists {
-		// 	continue
-		// }
 
 		isValid = field.IsValid(values)
+
+		if isValid {
+			cleanedData[name] = field.Type.CleanData(values)
+		}
+	}
+
+	if isValid {
+		f.CleanedData = cleanedData
 	}
 
 	return isValid

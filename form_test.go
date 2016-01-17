@@ -1,6 +1,7 @@
 package forms
 
 import (
+	"github.com/stretchr/testify/assert"
 	"net/url"
 	"testing"
 )
@@ -15,16 +16,24 @@ func TestBaseForm(t *testing.T) {
 		Fields: map[string]*Field{
 			"field1": &Field{
 				Type: &Input{},
-				// Validators: []Validator{},
 			},
 			"field2": &Field{
-				Type:       &Input{},
-				Validators: []Validator{},
+				Type: &Input{},
 			},
 		},
 	}
 
-	if !f.IsValid(postData) {
-		t.Error("Expected true, got false")
-	}
+	assert.Equal(
+		t, f.CleanedData, *new(CleanedData),
+		"CleanedData should be empty at beggining")
+
+	assert.True(t, f.IsValid(postData), "Form should pass")
+	assert.Equal(
+		t, f.CleanedData, CleanedData{"field1": "Foo", "field2": "Bar"},
+		"Forms CleanedData field should contain cleaned data")
+
+	assert.True(t, f.IsValid(url.Values{}), "Form should pass")
+	assert.Equal(
+		t, f.CleanedData, CleanedData{"field1": "", "field2": ""},
+		"Form should pass")
 }
