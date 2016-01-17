@@ -6,7 +6,8 @@ import (
 	"testing"
 )
 
-func TestBaseForm(t *testing.T) {
+// TestFormIsValid tests data that come from request (url.Values)
+func TestFormIsValid(t *testing.T) {
 	postData := url.Values{}
 	postData.Set("field1", "Foo")
 	postData.Set("field2", "Bar")
@@ -35,5 +36,38 @@ func TestBaseForm(t *testing.T) {
 	assert.True(t, f.IsValid(url.Values{}), "Form should pass")
 	assert.Equal(
 		t, f.CleanedData, CleanedData{"field1": "", "field2": ""},
+		"Form should pass")
+}
+
+// TestFromIsValidMap tests data that come from map
+func TestFromIsValidMap(t *testing.T) {
+	f := Form{
+		Fields: map[string]*Field{
+			"field1": &Field{
+				Type: &Input{},
+			},
+			"field2": &Field{
+				Type: &Input{},
+			},
+		},
+	}
+
+	values := map[string]interface{}{
+		"field1": "Spam",
+		"field2": []string{"Ham"},
+	}
+
+	assert.True(t, f.IsValidMap(values), "Form should pass")
+	assert.Equal(
+		t, f.CleanedData, CleanedData{"field1": "Spam", "field2": "Ham"},
+		"Form should pass")
+
+	values = map[string]interface{}{
+		"field1": "Spam",
+	}
+
+	assert.True(t, f.IsValidMap(values), "Form should pass")
+	assert.Equal(
+		t, f.CleanedData, CleanedData{"field1": "Spam", "field2": ""},
 		"Form should pass")
 }

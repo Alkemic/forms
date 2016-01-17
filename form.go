@@ -3,6 +3,7 @@ package forms
 import (
 	"fmt"
 	"net/url"
+	"reflect"
 )
 
 type CleanedData map[string]interface{}
@@ -45,9 +46,25 @@ func (f *Form) IsValid(data url.Values) (isValid bool) {
 	return isValid
 }
 
-// SetFormData populates data from http.Request.Form values
-func (f *Form) IsValidArray(data url.Values) {
-	return
+// IsValidMap populates data from map
+// IsValidMap accepts map of string/strings with keys as field names
+func (f *Form) IsValidMap(values map[string]interface{}) bool {
+	data := url.Values{}
+
+	for k, v := range values {
+		switch reflect.TypeOf(v).Kind() {
+		case reflect.Slice:
+			s := reflect.ValueOf(v)
+			for i := 0; i < s.Len(); i++ {
+				data.Add(k, s.Index(i).String())
+			}
+		case reflect.String:
+			str, _ := v.(string)
+			data.Set(k, str)
+		}
+	}
+
+	return f.IsValid(data)
 }
 
 func Example1() {
