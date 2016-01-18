@@ -71,3 +71,19 @@ func TestFromIsValidMap(t *testing.T) {
 		t, f.CleanedData, CleanedData{"field1": "Spam", "field2": ""},
 		"Form should pass")
 }
+
+func TestDefaultFieldType(t *testing.T) {
+	f := Form{
+		Fields: map[string]*Field{
+			"field1": &Field{},
+			"field2": &Field{},
+		},
+	}
+
+	values := map[string]interface{}{
+		"field1": "Spam",
+		"field2": []string{"Ham"},
+	}
+
+	assert.True(t, f.IsValidMap(values), "Form should pass")
+}

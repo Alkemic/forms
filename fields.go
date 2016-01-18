@@ -15,6 +15,11 @@ type Field struct {
 
 func (f *Field) IsValid(values []string) (result bool) {
 	c := len(values)
+
+	if f.Type == nil {
+		f.Type = &Input{}
+	}
+
 	if !f.Type.IsMultiValue() && c > 1 {
 		f.Errors = append(f.Errors, translations["INCORRECT_MULTI_VAL"])
 	}
