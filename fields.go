@@ -1,5 +1,9 @@
 package forms
 
+import (
+// "fmt"
+)
+
 type Field struct {
 	Name string
 
@@ -13,7 +17,7 @@ type Field struct {
 	Attributes map[string]string
 }
 
-func (f *Field) IsValid(values []string) (result bool) {
+func (f *Field) IsValid(values []string) (isValid bool) {
 	c := len(values)
 
 	if f.Type == nil {
@@ -24,17 +28,16 @@ func (f *Field) IsValid(values []string) (result bool) {
 		f.Errors = append(f.Errors, translations["INCORRECT_MULTI_VAL"])
 	}
 
-	// var result errors.Error
-	result = true
+	isValid = true
 	for _, validator := range f.Validators {
-		result, msg := validator.IsValid(f.Value)
+		result, msg := validator.IsValid(values)
 		if !result {
 			f.Errors = append(f.Errors, msg)
-			result = false
+			isValid = false
 		}
 	}
 
-	return result
+	return isValid
 }
 
 func (f *Field) Field() (field string) {

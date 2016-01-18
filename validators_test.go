@@ -19,7 +19,7 @@ type ValidatorTestsSet struct {
 
 func executeValidatorTests(t *testing.T, results ValidatorTestsSet) {
 	for _, result := range results.results {
-		r, _ := result.validator.IsValid(result.test)
+		r, _ := result.validator.IsValid([]string{result.test})
 		if result.result {
 			assert.True(
 				t, r, fmt.Sprintf(

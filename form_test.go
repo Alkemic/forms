@@ -87,3 +87,22 @@ func TestDefaultFieldType(t *testing.T) {
 
 	assert.True(t, f.IsValidMap(values), "Form should pass")
 }
+
+func TestBasicValidation(t *testing.T) {
+	f := Form{
+		Fields: map[string]*Field{
+			"field1": &Field{
+				Validators: []Validator{
+					&Required{},
+				},
+			},
+			"field2": &Field{},
+		},
+	}
+
+	values := map[string]interface{}{
+		"field2": []string{"Ham"},
+	}
+
+	assert.False(t, f.IsValidMap(values), "Form shouldn't pass")
+}

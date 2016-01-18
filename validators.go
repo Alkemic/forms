@@ -5,19 +5,23 @@ import (
 	"regexp"
 )
 
+const (
+	EMAIL_PATTERN = `(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b`
+)
+
 func patternMatched(pattern, value string) bool {
 	matched, _ := regexp.MatchString(pattern, value)
 	return matched
 }
 
 type Validator interface {
-	IsValid(value string) (bool, string)
+	IsValid(values []string) (bool, string)
 }
 
 type Required struct{}
 
-func (r *Required) IsValid(value string) (bool, string) {
-	if len(value) > 0 {
+func (r *Required) IsValid(values []string) (bool, string) {
+	if len(values) > 0 && len(values[0]) > 0 {
 		return true, ""
 	}
 
@@ -28,17 +32,15 @@ type Regexp struct {
 	Pattern string
 }
 
-func (r *Regexp) IsValid(value string) (bool, string) {
+func (r *Regexp) IsValid(values []string) (bool, string) {
 	msg := ""
 	if r.Pattern == "" {
 		return false, ""
 	}
-	// matched, err := regexp.MatchString(r.Pattern, value)
-	// fmt.Println(r.Pattern, value, matched, err)
-	// return matched
-	m := patternMatched(r.Pattern, value)
+
+	m := patternMatched(r.Pattern, values[0])
 	if !m {
-		msg = fmt.Sprintf("Value doesn't match pattern \"%s\"", r.Pattern)
+		msg = fmt.Sprintf(translations["NO_MATCH_PATTERN"], r.Pattern)
 	}
 
 	return m, msg
@@ -46,21 +48,21 @@ func (r *Regexp) IsValid(value string) (bool, string) {
 
 type Email struct{}
 
-func (v *Email) IsValid(value string) (bool, string) {
-	m := patternMatched(`(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b`, value)
+func (v *Email) IsValid(values []string) (bool, string) {
+	m := patternMatched(EMAIL_PATTERN, values[0])
 	if m {
 		return m, ""
 	}
 
-	return m, "Entered value is not correct email address"
+	return m, translations["INCORRECT_EMAIL"]
 }
 
 type MinLength struct {
 	Min int
 }
 
-func (v *MinLength) IsValid(value string) (bool, string) {
-	if len(value) >= v.Min {
+func (v *MinLength) IsValid(values []string) (bool, string) {
+	if len(values[0]) >= v.Min {
 		return true, ""
 	}
 
@@ -71,20 +73,10 @@ type MaxLength struct {
 	Max int
 }
 
-func (v *MaxLength) IsValid(value string) (bool, string) {
-	if len(value) <= v.Max {
+func (v *MaxLength) IsValid(values []string) (bool, string) {
+	if len(values[0]) <= v.Max {
 		return true, ""
 	}
 
 	return false, fmt.Sprintf(translations["INCORRECT_MAX_LENGTH"], v.Max)
-}
-
-func notMain() {
-	min := &MinLength{Min: 6}
-	emailValidator := &Email{}
-
-	fmt.Println(min.IsValid("luelue"))
-	fmt.Println(min.IsValid("valuesss"))
-	fmt.Println(emailValidator.IsValid("value"))
-	fmt.Println(emailValidator.IsValid("alkemic7@gmail.com"))
 }

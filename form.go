@@ -25,17 +25,20 @@ func (f *Form) Clear() {
 	}
 }
 
-func (f *Form) IsValid(data url.Values) (isValid bool) {
+func (f *Form) IsValid(data url.Values) bool {
 	f.Clear()
+	isValid := true
 	cleanedData := CleanedData{}
 
 	for name, field := range f.Fields {
 		values, _ := data[name]
 
-		isValid = field.IsValid(values)
+		result := field.IsValid(values)
 
-		if isValid {
+		if result {
 			cleanedData[name] = field.Type.CleanData(values)
+		} else {
+			isValid = false
 		}
 	}
 

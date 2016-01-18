@@ -11,5 +11,7 @@ func init() {
 		"INCORRECT_MULTI_VAL":  "You supplied more than one value for this field",
 		"INCORRECT_MIN_LENGTH": "Entered value need to be at least %d chars long",
 		"INCORRECT_MAX_LENGTH": "Entered value need to be at max %d chars long",
+
+		"NO_MATCH_PATTERN": "Value doesn't match pattern \"%s\"",
 	}
 }
