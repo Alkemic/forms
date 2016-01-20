@@ -1,20 +1,14 @@
 package forms
 
-import (
-// "fmt"
-)
-
 type Field struct {
 	Name string
 
-	Value string
-	Type  Type
+	Value      interface{}
+	Type       Type
+	Attributes map[string]string
 
 	Validators []Validator
-
-	Errors []string
-
-	Attributes map[string]string
+	Errors     []string
 }
 
 func (f *Field) IsValid(values []string) (isValid bool) {
@@ -26,6 +20,7 @@ func (f *Field) IsValid(values []string) (isValid bool) {
 
 	if !f.Type.IsMultiValue() && c > 1 {
 		f.Errors = append(f.Errors, translations["INCORRECT_MULTI_VAL"])
+		return false
 	}
 
 	isValid = true
