@@ -80,3 +80,29 @@ func TestEmailValidator(t *testing.T) {
 
 	executeValidatorTests(t, results)
 }
+
+func TestMinLengthValidator(t *testing.T) {
+	var results = ValidatorTestsSet{
+		name: "MinLength",
+		results: ValidatorResults{
+			{&MinLength{Min: 2}, "foo", true},
+			{&MinLength{Min: 3}, "foo", true},
+			{&MinLength{Min: 4}, "foo", false},
+		},
+	}
+
+	executeValidatorTests(t, results)
+}
+
+func TestMaxLengthValidator(t *testing.T) {
+	var results = ValidatorTestsSet{
+		name: "MaxLength",
+		results: ValidatorResults{
+			{&MaxLength{Max: 2}, "foo", false},
+			{&MaxLength{Max: 3}, "foo", true},
+			{&MaxLength{Max: 4}, "foo", true},
+		},
+	}
+
+	executeValidatorTests(t, results)
+}
