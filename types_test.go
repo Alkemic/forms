@@ -88,3 +88,23 @@ func TestTypeTextarea(t *testing.T) {
 
 	executeTypeTests(t, &Textarea{}, resultsSet)
 }
+
+func TestTypeInputNumber(t *testing.T) {
+	var resultsSet = TypeTestsSet{
+		name:       "InputNumber",
+		inputType:  "number",
+		multiValue: false,
+
+		results: TypeTestsResults{
+			{[]string{"12"}, int64(12)},
+			{[]string{"1ab"}, nil},
+			{[]string{"-1"}, int64(-1)},
+			{nil, nil},
+			{[]string{"-12.3"}, float64(-12.3)},
+			{[]string{"-12.3s"}, nil},
+			{[]string{"99999999999999.1234123"}, float64(99999999999999.1234123)},
+		},
+	}
+
+	executeTypeTests(t, &InputNumber{}, resultsSet)
+}

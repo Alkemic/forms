@@ -52,15 +52,20 @@ type InputNumber struct {
 
 func (i *InputNumber) CleanData(values []string) interface{} {
 	if len(values) == 1 {
-		fval, err := strconv.ParseFloat(values[0], 64)
-		if err != nil {
-			return fval
-		}
-
 		ival, err := strconv.ParseInt(values[0], 10, 64)
-		if err != nil {
+		if err == nil {
 			return ival
 		}
+
+		fval, err := strconv.ParseFloat(values[0], 64)
+		if err == nil {
+			return fval
+		}
 	}
+
 	return nil
+}
+
+func (t *InputNumber) GetType() string {
+	return "number"
 }
