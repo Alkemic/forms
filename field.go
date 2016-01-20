@@ -1,7 +1,14 @@
 package forms
 
+import (
+	"fmt"
+)
+
 type Field struct {
 	Name string
+
+	Label           string
+	LabelAttributes map[string]string
 
 	Value      interface{}
 	Type       Type
@@ -39,6 +46,16 @@ func (f *Field) Field() (field string) {
 	return field
 }
 
-func (f *Field) Label() (l string) {
-	return l
+func (f *Field) RenderLabel() string {
+	noUse := []string{"for"}
+	label := "<label for=\"f_%s\"%s>%s</label>"
+	attributes := ""
+
+	for k, v := range f.LabelAttributes {
+		if !ValueInSlice(k, noUse) {
+			attributes = attributes + fmt.Sprintf(" %s=\"%s\"", k, v)
+		}
+	}
+
+	return fmt.Sprintf(label, f.Name, attributes, f.Label)
 }
