@@ -33,17 +33,16 @@ type Regexp struct {
 }
 
 func (r *Regexp) IsValid(values []string) (bool, string) {
-	msg := ""
 	if r.Pattern == "" {
-		return false, ""
+		return false, fmt.Sprintf(translations["NO_MATCH_PATTERN"], r.Pattern)
 	}
 
 	m := patternMatched(r.Pattern, values[0])
 	if !m {
-		msg = fmt.Sprintf(translations["NO_MATCH_PATTERN"], r.Pattern)
+		return false, fmt.Sprintf(translations["NO_MATCH_PATTERN"], r.Pattern)
 	}
 
-	return m, msg
+	return m, ""
 }
 
 type Email struct{}
@@ -79,4 +78,18 @@ func (v *MaxLength) IsValid(values []string) (bool, string) {
 	}
 
 	return false, fmt.Sprintf(translations["INCORRECT_MAX_LENGTH"], v.Max)
+}
+
+type InSlice struct {
+	Values []string
+}
+
+func (v *InSlice) IsValid(values []string) (bool, string) {
+	for _, value := range values {
+		if !ValueInSlice(value, v.Values) {
+			return false, fmt.Sprintf(translations["VALUE_NOT_FOUND"], value)
+		}
+	}
+
+	return true, ""
 }

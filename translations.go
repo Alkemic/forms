@@ -13,5 +13,7 @@ func init() {
 		"INCORRECT_MAX_LENGTH": "Entered value need to be at max %d chars long",
 
 		"NO_MATCH_PATTERN": "Value doesn't match pattern \"%s\"",
+
+		"VALUE_NOT_FOUND": "Value \"%s\" not found in slice",
 	}
 }

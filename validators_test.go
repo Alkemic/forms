@@ -21,7 +21,7 @@ type ValidatorTestsSet struct {
 func executeValidatorTests(t *testing.T, results ValidatorTestsSet) {
 	for _, result := range results.results {
 		r, m := result.validator.IsValid([]string{result.test})
-		assert.Equal(t, m, result.message)
+		assert.Equal(t, m, result.message, "Incorrect message for \"%s\"", result.validator)
 		if result.result {
 			assert.True(
 				t, r, fmt.Sprintf(
@@ -103,6 +103,22 @@ func TestMaxLengthValidator(t *testing.T) {
 			{&MaxLength{Max: 2}, "foo", false, fmt.Sprintf(translations["INCORRECT_MAX_LENGTH"], 2)},
 			{&MaxLength{Max: 3}, "foo", true, ""},
 			{&MaxLength{Max: 4}, "foo", true, ""},
+		},
+	}
+
+	executeValidatorTests(t, results)
+}
+
+func TestInSliceValidator(t *testing.T) {
+	testSlice := []string{"foo", "bar", "spam", "ham", "eggs"}
+	var results = ValidatorTestsSet{
+		name: "InSlice",
+		results: ValidatorResults{
+			{&InSlice{Values: []string{""}}, "foo", false, fmt.Sprintf(translations["VALUE_NOT_FOUND"], "foo")},
+			{&InSlice{Values: []string{""}}, "", true, ""},
+			{&InSlice{Values: []string{}}, "", false, fmt.Sprintf(translations["VALUE_NOT_FOUND"], "")},
+			{&InSlice{Values: testSlice}, "spam", true, ""},
+			{&InSlice{Values: testSlice}, "spa", false, fmt.Sprintf(translations["VALUE_NOT_FOUND"], "spa")},
 		},
 	}
 
