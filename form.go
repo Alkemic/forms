@@ -55,13 +55,12 @@ func (f *Form) IsValidMap(values map[string]interface{}) bool {
 	data := url.Values{}
 
 	for k, v := range values {
-		switch reflect.TypeOf(v).Kind() {
-		case reflect.Slice:
+		if IsSlice(v) {
 			s := reflect.ValueOf(v)
 			for i := 0; i < s.Len(); i++ {
 				data.Add(k, s.Index(i).String())
 			}
-		case reflect.String:
+		} else {
 			str, _ := v.(string)
 			data.Set(k, str)
 		}
