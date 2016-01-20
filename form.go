@@ -1,7 +1,6 @@
 package forms
 
 import (
-	"fmt"
 	"net/url"
 	"reflect"
 )
@@ -67,25 +66,4 @@ func (f *Form) IsValidMap(values map[string]interface{}) bool {
 	}
 
 	return f.IsValid(data)
-}
-
-func Example1() {
-	fields := map[string]*Field{
-		"email": &Field{
-			Type: &Input{},
-			Validators: []Validator{
-				&Email{},
-			},
-			Attributes: map[string]string{
-				"required": "",
-				"class":    "",
-			},
-		},
-	}
-
-	loginForm := Form{
-		Fields: fields,
-	}
-
-	fmt.Println(loginForm)
 }
