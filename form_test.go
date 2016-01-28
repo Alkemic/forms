@@ -106,3 +106,17 @@ func TestBasicValidation(t *testing.T) {
 
 	assert.False(t, f.IsValidMap(values), "Form shouldn't pass")
 }
+
+func TestFormNewFunc(t *testing.T) {
+	f := New(
+		map[string]*Field{
+			"field1": &Field{},
+			"field2": &Field{},
+		},
+		Attributes{"id": "test"},
+	)
+
+	assert.Equal(t, f.Fields["field1"].Name, "field1", "Field name should propagate")
+	assert.Equal(t, f.Fields["field2"].Name, "field2", "Field name should propagate")
+	assert.Equal(t, f.Attributes, Attributes{"id": "test"}, "Attributes should be set")
+}

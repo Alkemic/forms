@@ -5,6 +5,7 @@ import (
 	"reflect"
 )
 
+type Attributes map[string]interface{}
 type CleanedData map[string]interface{}
 
 type Form struct {
@@ -13,7 +14,7 @@ type Form struct {
 
 	Errors []string
 
-	Attributes  map[string]string
+	Attributes  Attributes
 	CleanedData CleanedData
 }
 
@@ -66,4 +67,15 @@ func (f *Form) IsValidMap(values map[string]interface{}) bool {
 	}
 
 	return f.IsValid(data)
+}
+
+func New(fields map[string]*Field, attrs Attributes) *Form {
+	for fieldName, field := range fields {
+		field.Name = fieldName
+	}
+
+	return &Form{
+		Fields: fields,
+		Attributes: attrs,
+	}
 }
