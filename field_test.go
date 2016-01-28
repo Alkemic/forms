@@ -41,7 +41,7 @@ func TestFieldRenderLabel(t *testing.T) {
 	f := Field{
 		Name:  "test",
 		Label: "Test label",
-		LabelAttributes: map[string]string{
+		LabelAttributes: Attributes{
 			"v":    "asd",
 			"id":   "test",
 			"attr": "value",
@@ -57,7 +57,7 @@ func TestFieldRenderLabel(t *testing.T) {
 	f = Field{
 		Name:  "test",
 		Label: "Test label",
-		LabelAttributes: map[string]string{
+		LabelAttributes: Attributes{
 			"for": "asd",
 		},
 	}

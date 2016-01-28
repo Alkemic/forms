@@ -8,11 +8,11 @@ type Field struct {
 	Name string
 
 	Label           string
-	LabelAttributes map[string]string
+	LabelAttributes Attributes
 
 	Value      interface{}
 	Type       Type
-	Attributes map[string]string
+	Attributes Attributes
 
 	Validators []Validator
 	Errors     []string
