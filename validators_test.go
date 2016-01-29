@@ -8,9 +8,9 @@ import (
 
 type ValidatorResults []struct {
 	validator Validator
-	test      string
+	test      []string
 	result    bool
-	message   string
+	message   []string
 }
 
 type ValidatorTestsSet struct {
@@ -20,7 +20,7 @@ type ValidatorTestsSet struct {
 
 func executeValidatorTests(t *testing.T, results ValidatorTestsSet) {
 	for _, result := range results.results {
-		r, m := result.validator.IsValid([]string{result.test})
+		r, m := result.validator.IsValid(result.test)
 		assert.Equal(t, m, result.message, "Incorrect message for \"%s\"", result.validator)
 		if result.result {
 			assert.True(
@@ -40,8 +40,8 @@ func TestRequiredValidator(t *testing.T) {
 	var results = ValidatorTestsSet{
 		name: "Required",
 		results: ValidatorResults{
-			{&Required{}, "asd", true, ""},
-			{&Required{}, "", false, translations["REQUIRED"]},
+			{&Required{}, []string{"asd"}, true, []string{}},
+			{&Required{}, []string{}, false, []string{translations["REQUIRED"]}},
 		},
 	}
 
@@ -52,12 +52,17 @@ func TestRegexpValidator(t *testing.T) {
 	var results = ValidatorTestsSet{
 		name: "Regexp",
 		results: ValidatorResults{
-			{&Regexp{}, "asd", false, fmt.Sprintf(translations["NO_MATCH_PATTERN"], "")},
-			{&Regexp{""}, "asd", false, fmt.Sprintf(translations["NO_MATCH_PATTERN"], "")},
-			{&Regexp{"^[a-d]*$"}, "accdddaabbcc", true, ""},
-			{&Regexp{"^[a-d]*$"}, "accdddaabbcce", false, fmt.Sprintf(translations["NO_MATCH_PATTERN"], "^[a-d]*$")},
-			{&Regexp{"[0-9]*"}, "accddd123aabbcce", true, ""},
-			{&Regexp{"^[0-9]*$"}, "accddd123aabbcce", false, fmt.Sprintf(translations["NO_MATCH_PATTERN"], "^[0-9]*$")},
+			{&Regexp{}, []string{"asd"}, false,
+				[]string{fmt.Sprintf(translations["NO_MATCH_PATTERN"], "")}},
+			{&Regexp{""}, []string{"asd"}, false,
+				[]string{fmt.Sprintf(translations["NO_MATCH_PATTERN"], "")}},
+			{&Regexp{""}, []string{""}, true, []string{}},
+			{&Regexp{"^[a-d]*$"}, []string{"accdddaabbcc"}, true, []string{}},
+			{&Regexp{"^[a-d]*$"}, []string{"accdddaabbcce"}, false,
+				[]string{fmt.Sprintf(translations["NO_MATCH_PATTERN"], "^[a-d]*$")}},
+			{&Regexp{"[0-9]*"}, []string{"accddd123aabbcce"}, true, []string{}},
+			{&Regexp{"^[0-9]*$"}, []string{"accddd123aabbcce"}, false,
+				[]string{fmt.Sprintf(translations["NO_MATCH_PATTERN"], "^[0-9]*$")}},
 		},
 	}
 
@@ -68,15 +73,16 @@ func TestEmailValidator(t *testing.T) {
 	var results = ValidatorTestsSet{
 		name: "Email",
 		results: ValidatorResults{
-			{&Email{}, "foo", false, translations["INCORRECT_EMAIL"]},
-			{&Email{}, "foo@ham", false, translations["INCORRECT_EMAIL"]},
-			{&Email{}, "foo@ham.p", false, translations["INCORRECT_EMAIL"]},
-			{&Email{}, "foo@ham.pl", true, ""},
-			{&Email{}, "foo+bar@ham", false, translations["INCORRECT_EMAIL"]},
-			{&Email{}, "foo+bar@ham.pl", true, ""},
+			{&Email{}, []string{}, true, []string{}},
+			{&Email{}, []string{"foo"}, false, []string{translations["INCORRECT_EMAIL"]}},
+			{&Email{}, []string{"foo@ham"}, false, []string{translations["INCORRECT_EMAIL"]}},
+			{&Email{}, []string{"foo@ham.p"}, false, []string{translations["INCORRECT_EMAIL"]}},
+			{&Email{}, []string{"foo@ham.pl"}, true, []string{}},
+			{&Email{}, []string{"foo+bar@ham"}, false, []string{translations["INCORRECT_EMAIL"]}},
+			{&Email{}, []string{"foo+bar@ham.pl"}, true, []string{}},
 
-			{&Email{}, "foo@h_am.pl", false, translations["INCORRECT_EMAIL"]},
-			{&Email{}, "foo+bar@h_am.pl", false, translations["INCORRECT_EMAIL"]},
+			{&Email{}, []string{"foo@h_am.pl"}, false, []string{translations["INCORRECT_EMAIL"]}},
+			{&Email{}, []string{"foo+bar@h_am.pl"}, false, []string{translations["INCORRECT_EMAIL"]}},
 		},
 	}
 
@@ -87,9 +93,15 @@ func TestMinLengthValidator(t *testing.T) {
 	var results = ValidatorTestsSet{
 		name: "MinLength",
 		results: ValidatorResults{
-			{&MinLength{Min: 2}, "foo", true, ""},
-			{&MinLength{Min: 3}, "foo", true, ""},
-			{&MinLength{Min: 4}, "foo", false, fmt.Sprintf(translations["INCORRECT_MIN_LENGTH"], 4)},
+			{&MinLength{Min: 2}, []string{}, true, []string{}},
+			{&MinLength{Min: 2}, []string{""}, false,
+				[]string{fmt.Sprintf(translations["INCORRECT_MIN_LENGTH"], 2)}},
+			{&MinLength{Min: 2}, []string{"foo"}, true, []string{}},
+			{&MinLength{Min: 2}, []string{"foo", "a"}, false,
+				[]string{fmt.Sprintf(translations["INCORRECT_MIN_LENGTH"], 2)}},
+			{&MinLength{Min: 3}, []string{"foo"}, true, []string{}},
+			{&MinLength{Min: 4}, []string{"foo"}, false,
+				[]string{fmt.Sprintf(translations["INCORRECT_MIN_LENGTH"], 4)}},
 		},
 	}
 
@@ -100,9 +112,14 @@ func TestMaxLengthValidator(t *testing.T) {
 	var results = ValidatorTestsSet{
 		name: "MaxLength",
 		results: ValidatorResults{
-			{&MaxLength{Max: 2}, "foo", false, fmt.Sprintf(translations["INCORRECT_MAX_LENGTH"], 2)},
-			{&MaxLength{Max: 3}, "foo", true, ""},
-			{&MaxLength{Max: 4}, "foo", true, ""},
+			{&MaxLength{Max: 2}, []string{}, true, []string{}},
+			{&MaxLength{Max: 2}, []string{""}, true, []string{}},
+			{&MaxLength{Max: 5}, []string{"foo", "asdasdd"}, false,
+				[]string{fmt.Sprintf(translations["INCORRECT_MAX_LENGTH"], 5)}},
+			{&MaxLength{Max: 2}, []string{"foo"}, false,
+				[]string{fmt.Sprintf(translations["INCORRECT_MAX_LENGTH"], 2)}},
+			{&MaxLength{Max: 3}, []string{"foo"}, true, []string{}},
+			{&MaxLength{Max: 4}, []string{"foo"}, true, []string{}},
 		},
 	}
 
@@ -114,11 +131,15 @@ func TestInSliceValidator(t *testing.T) {
 	var results = ValidatorTestsSet{
 		name: "InSlice",
 		results: ValidatorResults{
-			{&InSlice{Values: []string{""}}, "foo", false, fmt.Sprintf(translations["VALUE_NOT_FOUND"], "foo")},
-			{&InSlice{Values: []string{""}}, "", true, ""},
-			{&InSlice{Values: []string{}}, "", false, fmt.Sprintf(translations["VALUE_NOT_FOUND"], "")},
-			{&InSlice{Values: testSlice}, "spam", true, ""},
-			{&InSlice{Values: testSlice}, "spa", false, fmt.Sprintf(translations["VALUE_NOT_FOUND"], "spa")},
+			{&InSlice{Values: []string{""}}, []string{"foo"}, false,
+				[]string{fmt.Sprintf(translations["VALUE_NOT_FOUND"], "foo")}},
+			{&InSlice{Values: []string{""}}, []string{""}, true, []string{}},
+			{&InSlice{Values: []string{}}, []string{""}, false,
+				[]string{fmt.Sprintf(translations["VALUE_NOT_FOUND"], "")}},
+			{&InSlice{Values: testSlice}, []string{"spam"}, true, []string{}},
+			{&InSlice{Values: testSlice}, []string{"spa", "asd"}, false,
+				[]string{fmt.Sprintf(translations["VALUE_NOT_FOUND"], "spa"),
+					fmt.Sprintf(translations["VALUE_NOT_FOUND"], "asd")}},
 		},
 	}
 

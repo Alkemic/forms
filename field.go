@@ -32,9 +32,9 @@ func (f *Field) IsValid(values []string) (isValid bool) {
 
 	isValid = true
 	for _, validator := range f.Validators {
-		result, msg := validator.IsValid(values)
+		result, msgs := validator.IsValid(values)
 		if !result {
-			f.Errors = append(f.Errors, msg)
+			f.Errors = append(f.Errors, msgs...)
 			isValid = false
 		}
 	}
