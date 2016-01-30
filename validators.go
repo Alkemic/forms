@@ -2,6 +2,7 @@ package forms
 
 import (
 	"fmt"
+	"html"
 	"regexp"
 )
 
@@ -17,6 +18,21 @@ func patternMatched(pattern, value string) bool {
 	return matched
 }
 
+type checkFunc func(string) bool
+
+func validate(fn checkFunc, values []string, msg string) (bool, []string) {
+	result := true
+	msgs := []string{}
+	for _, value := range values {
+		if !fn(value) {
+			result = false
+			msgs = append(msgs, html.EscapeString(fmt.Sprintf(msg, value)))
+		}
+	}
+
+	return result, msgs
+}
+
 type Validator interface {
 	IsValid(values []string) (bool, []string)
 }
@@ -28,7 +44,7 @@ func (r *Required) IsValid(values []string) (bool, []string) {
 		return true, []string{}
 	}
 
-	return false, []string{translations["REQUIRED"]}
+	return false, []string{html.EscapeString(translations["REQUIRED"])}
 }
 
 type Regexp struct {
@@ -36,33 +52,17 @@ type Regexp struct {
 }
 
 func (r *Regexp) IsValid(values []string) (bool, []string) {
-	result := true
-	msgs := []string{}
-	for _, value := range values {
-		m := patternMatched(r.Pattern, value)
-		if !m {
-			result = false
-			msgs = append(msgs, fmt.Sprintf(translations["NO_MATCH_PATTERN"], r.Pattern))
-		}
-	}
-
-	return result, msgs
+	return validate(func(value string) bool {
+		return patternMatched(r.Pattern, value)
+	}, values, fmt.Sprintf(translations["NO_MATCH_PATTERN"], r.Pattern))
 }
 
 type Email struct{}
 
 func (v *Email) IsValid(values []string) (bool, []string) {
-	result := true
-	msgs := []string{}
-	for _, value := range values {
-		m := patternMatched(EMAIL_PATTERN, value)
-		if !m {
-			result = false
-			msgs = append(msgs, translations["INCORRECT_EMAIL"])
-		}
-	}
-
-	return result, msgs
+	return validate(func(value string) bool {
+		return patternMatched(EMAIL_PATTERN, value)
+	}, values, translations["INCORRECT_EMAIL"])
 }
 
 type MinLength struct {
@@ -70,17 +70,9 @@ type MinLength struct {
 }
 
 func (v *MinLength) IsValid(values []string) (bool, []string) {
-	result := true
-	msgs := []string{}
-	for _, value := range values {
-		m := len(value) >= v.Min
-		if !m {
-			result = false
-			msgs = append(msgs, fmt.Sprintf(translations["INCORRECT_MIN_LENGTH"], v.Min))
-		}
-	}
-
-	return result, msgs
+	return validate(func(value string) bool {
+		return len(value) >= v.Min
+	}, values, fmt.Sprintf(translations["INCORRECT_MIN_LENGTH"], v.Min))
 }
 
 type MaxLength struct {
@@ -88,16 +80,9 @@ type MaxLength struct {
 }
 
 func (v *MaxLength) IsValid(values []string) (bool, []string) {
-	result := true
-	msgs := []string{}
-	for _, value := range values {
-		if !(len(value) <= v.Max) {
-			result = false
-			msgs = append(msgs, fmt.Sprintf(translations["INCORRECT_MAX_LENGTH"], v.Max))
-		}
-	}
-
-	return result, msgs
+	return validate(func(value string) bool {
+		return len(value) <= v.Max
+	}, values, fmt.Sprintf(translations["INCORRECT_MAX_LENGTH"], v.Max))
 }
 
 type InSlice struct {
@@ -105,22 +90,7 @@ type InSlice struct {
 }
 
 func (v *InSlice) IsValid(values []string) (bool, []string) {
-	result := true
-	msgs := []string{}
-	for _, value := range values {
-		if !ValueInSlice(value, v.Values) {
-			result = false
-			msgs = append(msgs, fmt.Sprintf(translations["VALUE_NOT_FOUND"], value))
-		}
-	}
-
-	return result, msgs
-
-	// for _, value := range values {
-	// 	if !ValueInSlice(value, v.Values) {
-	// 		return false, []string{fmt.Sprintf(translations["VALUE_NOT_FOUND"], value)}
-	// 	}
-	// }
-
-	return true, []string{}
+	return validate(func(value string) bool {
+		return ValueInSlice(value, v.Values)
+	}, values, translations["VALUE_NOT_FOUND"])
 }

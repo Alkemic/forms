@@ -3,6 +3,7 @@ package forms
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"html"
 	"testing"
 )
 
@@ -18,10 +19,24 @@ type ValidatorTestsSet struct {
 	results ValidatorResults
 }
 
+func prepareMsg(msg string, v1, v2 interface{}) string {
+	return fmt.Sprintf(fmt.Sprintf(msg, v1), v2)
+}
+
+func makeSafe(msgs []string) []string {
+	safeMsgs := []string{}
+	for _, msg := range msgs {
+		safeMsgs = append(safeMsgs, html.EscapeString(msg))
+	}
+
+	return safeMsgs
+}
+
 func executeValidatorTests(t *testing.T, results ValidatorTestsSet) {
 	for _, result := range results.results {
-		r, m := result.validator.IsValid(result.test)
-		assert.Equal(t, m, result.message, "Incorrect message for \"%s\"", result.validator)
+		r, msgs := result.validator.IsValid(result.test)
+
+		assert.Equal(t, msgs, makeSafe(result.message), "Incorrect message for \"%s\"", result.validator)
 		if result.result {
 			assert.True(
 				t, r, fmt.Sprintf(
@@ -52,17 +67,13 @@ func TestRegexpValidator(t *testing.T) {
 	var results = ValidatorTestsSet{
 		name: "Regexp",
 		results: ValidatorResults{
-			{&Regexp{}, []string{"asd"}, false,
-				[]string{fmt.Sprintf(translations["NO_MATCH_PATTERN"], "")}},
-			{&Regexp{""}, []string{"asd"}, false,
-				[]string{fmt.Sprintf(translations["NO_MATCH_PATTERN"], "")}},
+			{&Regexp{}, []string{"asd"}, false, []string{prepareMsg(translations["NO_MATCH_PATTERN"], "", "asd")}},
+			{&Regexp{""}, []string{"asd"}, false, []string{prepareMsg(translations["NO_MATCH_PATTERN"], "", "asd")}},
 			{&Regexp{""}, []string{""}, true, []string{}},
 			{&Regexp{"^[a-d]*$"}, []string{"accdddaabbcc"}, true, []string{}},
-			{&Regexp{"^[a-d]*$"}, []string{"accdddaabbcce"}, false,
-				[]string{fmt.Sprintf(translations["NO_MATCH_PATTERN"], "^[a-d]*$")}},
+			{&Regexp{"^[a-d]*$"}, []string{"accdddaabbcce"}, false, []string{prepareMsg(translations["NO_MATCH_PATTERN"], "^[a-d]*$", "accdddaabbcce")}},
 			{&Regexp{"[0-9]*"}, []string{"accddd123aabbcce"}, true, []string{}},
-			{&Regexp{"^[0-9]*$"}, []string{"accddd123aabbcce"}, false,
-				[]string{fmt.Sprintf(translations["NO_MATCH_PATTERN"], "^[0-9]*$")}},
+			{&Regexp{"^[0-9]*$"}, []string{"accddd123aabbcce"}, false, []string{prepareMsg(translations["NO_MATCH_PATTERN"], "^[0-9]*$", "accddd123aabbcce")}},
 		},
 	}
 
@@ -74,15 +85,15 @@ func TestEmailValidator(t *testing.T) {
 		name: "Email",
 		results: ValidatorResults{
 			{&Email{}, []string{}, true, []string{}},
-			{&Email{}, []string{"foo"}, false, []string{translations["INCORRECT_EMAIL"]}},
-			{&Email{}, []string{"foo@ham"}, false, []string{translations["INCORRECT_EMAIL"]}},
-			{&Email{}, []string{"foo@ham.p"}, false, []string{translations["INCORRECT_EMAIL"]}},
+			{&Email{}, []string{"foo"}, false, []string{fmt.Sprintf(translations["INCORRECT_EMAIL"], "foo")}},
+			{&Email{}, []string{"foo@ham"}, false, []string{fmt.Sprintf(translations["INCORRECT_EMAIL"], "foo@ham")}},
+			{&Email{}, []string{"foo@ham.p"}, false, []string{fmt.Sprintf(translations["INCORRECT_EMAIL"], "foo@ham.p")}},
 			{&Email{}, []string{"foo@ham.pl"}, true, []string{}},
-			{&Email{}, []string{"foo+bar@ham"}, false, []string{translations["INCORRECT_EMAIL"]}},
+			{&Email{}, []string{"foo+bar@ham"}, false, []string{fmt.Sprintf(translations["INCORRECT_EMAIL"], "foo+bar@ham")}},
 			{&Email{}, []string{"foo+bar@ham.pl"}, true, []string{}},
 
-			{&Email{}, []string{"foo@h_am.pl"}, false, []string{translations["INCORRECT_EMAIL"]}},
-			{&Email{}, []string{"foo+bar@h_am.pl"}, false, []string{translations["INCORRECT_EMAIL"]}},
+			{&Email{}, []string{"foo@h_am.pl"}, false, []string{fmt.Sprintf(translations["INCORRECT_EMAIL"], "foo@h_am.pl")}},
+			{&Email{}, []string{"foo+bar@h_am.pl"}, false, []string{fmt.Sprintf(translations["INCORRECT_EMAIL"], "foo+bar@h_am.pl")}},
 		},
 	}
 
@@ -94,14 +105,11 @@ func TestMinLengthValidator(t *testing.T) {
 		name: "MinLength",
 		results: ValidatorResults{
 			{&MinLength{Min: 2}, []string{}, true, []string{}},
-			{&MinLength{Min: 2}, []string{""}, false,
-				[]string{fmt.Sprintf(translations["INCORRECT_MIN_LENGTH"], 2)}},
+			{&MinLength{Min: 2}, []string{""}, false, []string{prepareMsg(translations["INCORRECT_MIN_LENGTH"], 2, "")}},
 			{&MinLength{Min: 2}, []string{"foo"}, true, []string{}},
-			{&MinLength{Min: 2}, []string{"foo", "a"}, false,
-				[]string{fmt.Sprintf(translations["INCORRECT_MIN_LENGTH"], 2)}},
+			{&MinLength{Min: 2}, []string{"foo", "a"}, false, []string{prepareMsg(translations["INCORRECT_MIN_LENGTH"], 2, "a")}},
 			{&MinLength{Min: 3}, []string{"foo"}, true, []string{}},
-			{&MinLength{Min: 4}, []string{"foo"}, false,
-				[]string{fmt.Sprintf(translations["INCORRECT_MIN_LENGTH"], 4)}},
+			{&MinLength{Min: 4}, []string{"foo"}, false, []string{prepareMsg(translations["INCORRECT_MIN_LENGTH"], 4, "foo")}},
 		},
 	}
 
@@ -114,10 +122,8 @@ func TestMaxLengthValidator(t *testing.T) {
 		results: ValidatorResults{
 			{&MaxLength{Max: 2}, []string{}, true, []string{}},
 			{&MaxLength{Max: 2}, []string{""}, true, []string{}},
-			{&MaxLength{Max: 5}, []string{"foo", "asdasdd"}, false,
-				[]string{fmt.Sprintf(translations["INCORRECT_MAX_LENGTH"], 5)}},
-			{&MaxLength{Max: 2}, []string{"foo"}, false,
-				[]string{fmt.Sprintf(translations["INCORRECT_MAX_LENGTH"], 2)}},
+			{&MaxLength{Max: 5}, []string{"foo", "asdasdd"}, false, []string{prepareMsg(translations["INCORRECT_MAX_LENGTH"], 5, "asdasdd")}},
+			{&MaxLength{Max: 2}, []string{"foo"}, false, []string{prepareMsg(translations["INCORRECT_MAX_LENGTH"], 2, "foo")}},
 			{&MaxLength{Max: 3}, []string{"foo"}, true, []string{}},
 			{&MaxLength{Max: 4}, []string{"foo"}, true, []string{}},
 		},
