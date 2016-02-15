@@ -9,14 +9,14 @@ Field{Required: True}
 
 Validate if user entered any data should be done in validation, and if you want ``<input />`` to have a ``required`` attribute, you need to set this in field's attributes.
 
-## Instalation
+## Installation
 As usual, no magic here:
 ```bash
 $ go get github.com/Alkemic/forms
 ```
 
 ## Usage
-Some day there you will find some documentation, but now here is this example and you can dig through tests files.
+Some day you will find here some documentation, but now here is this example and you can dig through tests files.
 ```go
 import "github.com/Alkemic/forms"
 
@@ -28,7 +28,7 @@ form := forms.New(
 	Attributes{"id": "test"},
 )
 
-form.IsValid(r.PostForm) {
+if form.IsValid(r.PostForm) {
     // if valid
 } else {
     // else not ;-)
