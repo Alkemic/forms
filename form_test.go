@@ -9,10 +9,11 @@ import (
 
 // TestFormIsValid tests data that come from request (url.Values)
 func TestFormIsValid(t *testing.T) {
-	postData := url.Values{}
-	postData.Set("field1", "Foo")
-	postData.Set("field2", "Bar")
-	postData.Set("fieldX", "Ham")
+	postData := url.Values{
+		"field1": []string{"Foo"},
+		"field2": []string{"Bar"},
+		"fieldX": []string{"Ham"},
+	}
 
 	f := Form{
 		Fields: map[string]*Field{
@@ -110,6 +111,16 @@ func TestBasicValidation(t *testing.T) {
 
 func TestFormNewFunc(t *testing.T) {
 	f := New(
+		map[string]*Field{
+			"field1": &Field{},
+			"field2": &Field{},
+		},
+		nil,
+	)
+
+	assert.Equal(t, f.Attributes, Attributes(nil), "Attributes should be nil")
+
+	f = New(
 		map[string]*Field{
 			"field1": &Field{},
 			"field2": &Field{},
