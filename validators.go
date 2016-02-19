@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	EMAIL_PATTERN = `(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b`
+	emailPattern = `(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b`
 )
 
 func patternMatched(pattern, value string) bool {
@@ -24,7 +24,7 @@ func validate(fn checkFunc, values []string, msg string) (bool, []string) {
 	result := true
 	msgs := []string{}
 	for _, value := range values {
-		if !fn(value) {
+		if value != "" && !fn(value) {
 			result = false
 			msgs = append(msgs, html.EscapeString(fmt.Sprintf(msg, value)))
 		}
@@ -61,7 +61,7 @@ type Email struct{}
 
 func (v *Email) IsValid(values []string) (bool, []string) {
 	return validate(func(value string) bool {
-		return patternMatched(EMAIL_PATTERN, value)
+		return patternMatched(emailPattern, value)
 	}, values, translations["INCORRECT_EMAIL"])
 }
 

@@ -4,13 +4,22 @@ import (
 	"fmt"
 )
 
+// Choice is used to store choices in field
+// I choose to use type here because we need ordering of choices
+type Choice struct {
+	Value string
+	Label string
+}
+
+// Field represent single field in form and its validatorss
 type Field struct {
 	Name string
 
 	Label           string
 	LabelAttributes Attributes
 
-	Value      interface{}
+	Choices    []Choice
+	Value      []string
 	Type       Type
 	Attributes Attributes
 
@@ -18,6 +27,7 @@ type Field struct {
 	Errors     []string
 }
 
+// IsValid do data validation
 func (f *Field) IsValid(values []string) (isValid bool) {
 	c := len(values)
 
@@ -42,20 +52,37 @@ func (f *Field) IsValid(values []string) (isValid bool) {
 	return isValid
 }
 
-func (f *Field) Field() (field string) {
-	return field
-}
-
-func (f *Field) RenderLabel() string {
-	noUse := []string{"for"}
-	label := "<label for=\"f_%s\"%s>%s</label>"
-	attributes := ""
-
-	for k, v := range f.LabelAttributes {
-		if !ValueInSlice(k, noUse) {
-			attributes = attributes + fmt.Sprintf(" %s=\"%s\"", k, v)
-		}
+// Render field (in matter of fact, only passing through to render method on type)
+func (f *Field) Render() string {
+	if f.Type == nil {
+		f.Type = &Input{}
 	}
 
-	return fmt.Sprintf(label, f.Name, attributes, f.Label)
+	return f.Type.Render(f, f.Choices, f.Value)
+}
+
+// RenderLabel render label for field
+func (f *Field) RenderLabel() string {
+	attributes := prepareAttributes(f.LabelAttributes, []string{"for"})
+
+	return fmt.Sprintf("<label for=\"f_%s\"%s>%s</label>", f.Name, attributes, f.Label)
+}
+
+// HasErrors returns information if there are validation errors in this field
+func (f *Field) HasErrors() bool {
+	return len(f.Errors) > 0
+}
+
+// RenderErrors render all errors as list (<ul>) with class "errors"
+func (f *Field) RenderErrors() string {
+	if !f.HasErrors() {
+		return ""
+	}
+
+	rendered := ""
+	for _, err := range f.Errors {
+		rendered += fmt.Sprintf("<li>%s</li>\n", err)
+	}
+
+	return fmt.Sprintf("<ul class=\"errors\">\n%s</li>", rendered)
 }

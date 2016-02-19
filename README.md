@@ -15,17 +15,28 @@ As usual, no magic here:
 $ go get github.com/Alkemic/forms
 ```
 
+## Field types
+
+### Cleaning data
+
+The incoming data need to be cleaned after succesful validation, and before we give them to user.
+By clean, we mean that we convert them to format/
+All of this transformation are done by method ``CleanData`` on ``Type``.
+For example, when we crate ``Field`` with type ``NumberInput`` in ``form.CleanedData`` we
+find a number (``int``), for ``MultiSelect`` we find a slice with all selected values.
+
 ## Usage
+
 Some day you will find here some documentation, but now here is this example and you can dig through tests files.
 ```go
 import "github.com/Alkemic/forms"
 
 form := forms.New(
-	map[string]*Field{
-		"field1": &Field{},
-		"field2": &Field{},
+	map[string]*forms.Field{
+		"email": &forms.Field{},
+		"password": &forms.Field{Type: &forms.InputPassword{}},
 	},
-	Attributes{"id": "test"},
+	forms.Attributes{"id": "login-form"},
 )
 
 if form.IsValid(r.PostForm) {
@@ -35,19 +46,53 @@ if form.IsValid(r.PostForm) {
 }
 ```
 
+I've decided to don't write whole form rendering method, because, let's be honest,
+it won't give level of control over form that we need and in the end you will
+have to do it by yourself. Insted of there are methods that will help you with
+displaying form.
+
+```html
+{{.Form.OpenTag}}
+{{if .Form.Fields.email.HasErrors}}
+    {{.Form.Fields.email.RenderErrors}}
+{{end}}
+{{.Form.Fields.email.RenderLabel}}
+{{.Form.Fields.email.Render}}
+
+{{if .Form.Fields.password.HasErrors}}
+    {{.Form.Fields.password.RenderErrors}}
+{{end}}
+{{.Form.Fields.password.RenderLabel}}
+{{.Form.Fields.password.Render}}
+{{.Form.CloseTag}}
+```
+
+Eventually you can render errors by yourself
+
+```html
+{{if .Form.Fields.email.HasErrors}}
+    <ul>
+        {{range .Form.Fields.email.Errors}}
+        <li class="error">{{.}}</li>
+        {{end}}
+    </ul>
+{{end}}
+```
+
 ## TODO
 **Big fat note: this library is under development, and it's API may or may not change.**
 Currently this library works, but I don't recomend this for prodution or even thinking about production usage. ;-)
 
-* [ ] Field rendering
+* [X] Field rendering
 * [ ] Initial data support
+* [ ] Internationalization
 * [ ] Field types (inc. types introduced in HTML5)
  * [x] Input
  * [x] Textarea
- * [ ] Radio
+ * [X] Radio
  * [ ] Select
- * [ ] Email
- * [ ] Number
+ * [X] Email
+ * [X] Number
  * [ ] Color
  * [ ] File
  * [ ] Hidden
