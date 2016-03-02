@@ -41,3 +41,34 @@ Currently this library works, but I don't recomend this for prodution or even th
 
 * [ ] Field rendering
 * [ ] Initial data support
+* [ ] Field types (inc. types introduced in HTML5)
+ * [x] Input
+ * [x] Textarea
+ * [ ] Radio
+ * [ ] Select
+ * [ ] Email
+ * [ ] Number
+ * [ ] Color
+ * [ ] File
+ * [ ] Hidden
+ * [ ] Image
+ * [ ] Month
+ * [ ] Password
+ * [ ] Range
+ * [ ] Telephone
+ * [ ] Time
+ * [ ] URL
+ * [ ] Week
+ * [ ] Date
+ * [ ] Datetime
+ * [ ] Datetime-local
+* [ ] Validators
+ * [x] Regexp
+ * [x] Required
+ * [x] Email
+ * [x] MinLength
+ * [x] MaxLength
+ * [x] InSlice
+ * [ ] MinValue
+ * [ ] MaxValue
+ * [ ] URL
