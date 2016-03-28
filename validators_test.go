@@ -105,7 +105,7 @@ func TestMinLengthValidator(t *testing.T) {
 		name: "MinLength",
 		results: ValidatorResults{
 			{&MinLength{Min: 2}, []string{}, true, []string{}},
-			{&MinLength{Min: 2}, []string{""}, false, []string{prepareMsg(translations["INCORRECT_MIN_LENGTH"], 2, "")}},
+			{&MinLength{Min: 2}, []string{""}, true, []string{}},
 			{&MinLength{Min: 2}, []string{"foo"}, true, []string{}},
 			{&MinLength{Min: 2}, []string{"foo", "a"}, false, []string{prepareMsg(translations["INCORRECT_MIN_LENGTH"], 2, "a")}},
 			{&MinLength{Min: 3}, []string{"foo"}, true, []string{}},
@@ -140,8 +140,7 @@ func TestInSliceValidator(t *testing.T) {
 			{&InSlice{Values: []string{""}}, []string{"foo"}, false,
 				[]string{fmt.Sprintf(translations["VALUE_NOT_FOUND"], "foo")}},
 			{&InSlice{Values: []string{""}}, []string{""}, true, []string{}},
-			{&InSlice{Values: []string{}}, []string{""}, false,
-				[]string{fmt.Sprintf(translations["VALUE_NOT_FOUND"], "")}},
+			{&InSlice{Values: []string{}}, []string{""}, true, []string{}},
 			{&InSlice{Values: testSlice}, []string{"spam"}, true, []string{}},
 			{&InSlice{Values: testSlice}, []string{"spa", "asd"}, false,
 				[]string{fmt.Sprintf(translations["VALUE_NOT_FOUND"], "spa"),

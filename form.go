@@ -1,30 +1,37 @@
 package forms
 
 import (
+	"fmt"
 	"net/url"
 	"reflect"
 )
 
+// Attributes is structure that contains forms or fields attributes
 type Attributes map[string]interface{}
+
+// CleanedData is structure in which we store data after validation
 type CleanedData map[string]interface{}
 
+// Form is structure that hold all fields, data, and
 type Form struct {
-	Data   map[string]string
+	// Keeps all the fields
 	Fields map[string]*Field
 
-	Errors []string
-
-	Attributes  Attributes
+	// Form attributes
+	Attributes Attributes
+	// After validation is done we put data here
 	CleanedData CleanedData
 }
 
+// Clear clears error and data on fields in form
 func (f *Form) Clear() {
-	f.Errors = []string{}
 	for _, field := range f.Fields {
 		field.Errors = []string{}
 	}
 }
 
+// IsValid validate all fields and if all is correct assign cleaned data from
+// every field to forms CleanedData attribute
 func (f *Form) IsValid(data url.Values) bool {
 	f.Clear()
 	isValid := true
@@ -32,6 +39,7 @@ func (f *Form) IsValid(data url.Values) bool {
 
 	for name, field := range f.Fields {
 		values, _ := data[name]
+		field.Value = values
 
 		result := field.IsValid(values)
 
@@ -49,8 +57,8 @@ func (f *Form) IsValid(data url.Values) bool {
 	return isValid
 }
 
-// IsValidMap populates data from map
-// IsValidMap accepts map of string/strings with keys as field names
+// IsValidMap populates data from map.
+// It accepts map of string/strings with keys as field names.
 func (f *Form) IsValidMap(values map[string]interface{}) bool {
 	data := url.Values{}
 
@@ -69,13 +77,34 @@ func (f *Form) IsValidMap(values map[string]interface{}) bool {
 	return f.IsValid(data)
 }
 
+// OpenTag render opening tag of the form with given attributes
+func (f *Form) OpenTag() string {
+	return fmt.Sprintf("<form%s>", prepareAttributes(f.Attributes, nil))
+}
+
+// CloseTag render closing tag for form
+func (f *Form) CloseTag() string {
+	return "</form>"
+}
+
+// New is shorthand, and prefered way, to create new form.
+// Main difference is that, this approach add field name, basing on key in map,
+// to a field instance
+// Example
+//     form := forms.New(
+//         map[string]*forms.Field{
+//             "field1": &forms.Field{},
+//             "field2": &forms.Field{},
+//         },
+//         forms.Attributes{"id": "test"},
+//     )
 func New(fields map[string]*Field, attrs Attributes) *Form {
 	for fieldName, field := range fields {
 		field.Name = fieldName
 	}
 
 	return &Form{
-		Fields: fields,
+		Fields:     fields,
 		Attributes: attrs,
 	}
 }

@@ -120,3 +120,27 @@ func TestFormNewFunc(t *testing.T) {
 	assert.Equal(t, f.Fields["field2"].Name, "field2", "Field name should propagate")
 	assert.Equal(t, f.Attributes, Attributes{"id": "test"}, "Attributes should be set")
 }
+
+func TestFormOpenTag(t *testing.T) {
+	openTag := New(nil, nil).OpenTag()
+
+	assert.Len(t, openTag, 6)
+	assert.Equal(t, openTag, `<form>`)
+
+	openTag = New(
+		nil,
+		Attributes{"id": "test", "class": "register-form rwd-form"},
+	).OpenTag()
+
+	assert.Len(t, openTag, 47)
+	assert.Contains(t, openTag, `<form `)
+	assert.Contains(t, openTag, ` id="test"`)
+	assert.Contains(t, openTag, ` class="register-form rwd-form"`)
+	assert.Contains(t, openTag, `>`)
+}
+
+func TestFormCloseTag(t *testing.T) {
+	f := New(nil, Attributes{"id": "test"})
+
+	assert.Equal(t, f.CloseTag(), "</form>")
+}

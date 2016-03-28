@@ -26,7 +26,10 @@ func TestFieldBasicValidation(t *testing.T) {
 func TestFieldDefaultType(t *testing.T) {
 	f := Field{}
 	_ = f.IsValid([]string{""})
+	assert.Equal(t, f.Type, &Input{}, "Field should have defult type Input")
 
+	f = Field{}
+	_ = f.Render()
 	assert.Equal(t, f.Type, &Input{}, "Field should have defult type Input")
 }
 
@@ -65,4 +68,31 @@ func TestFieldRenderLabel(t *testing.T) {
 	assert.Contains(t, label, "<label for=\"f_test\"", "")
 	assert.Contains(t, label, ">Test label</label>", "")
 	assert.NotContains(t, label, " for=\"asd\"", "")
+}
+
+func TestFieldRender(t *testing.T) {
+	var _t Type
+	var f Field
+	_t = &Input{}
+	f = Field{Type: _t, Name: "test1"}
+	assert.Equal(t, f.Render(), _t.Render(&f, nil, []string{}))
+
+	_t = &Textarea{}
+	f = Field{Type: _t, Name: "test1"}
+	assert.Equal(t, f.Render(), _t.Render(&f, nil, []string{}))
+
+	_t = &Radio{}
+	f = Field{Type: _t, Name: "test1"}
+	assert.Equal(t, f.Render(), _t.Render(&f, nil, []string{}))
+}
+
+func TestFieldHandlingErrors(t *testing.T) {
+	var f Field
+	f = Field{}
+	assert.False(t, f.HasErrors())
+	assert.Equal(t, f.RenderErrors(), "")
+	f = Field{}
+	f.Errors = []string{"Error"}
+	assert.True(t, f.HasErrors())
+	assert.Equal(t, f.RenderErrors(), "<ul class=\"errors\">\n<li>Error</li>\n</li>")
 }
