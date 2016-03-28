@@ -1,9 +1,10 @@
 package forms
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net/url"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // TestFormIsValid tests data that come from request (url.Values)

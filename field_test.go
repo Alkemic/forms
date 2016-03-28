@@ -1,8 +1,9 @@
 package forms
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFieldNoValidation(t *testing.T) {

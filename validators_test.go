@@ -2,9 +2,10 @@ package forms
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"html"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type ValidatorResults []struct {

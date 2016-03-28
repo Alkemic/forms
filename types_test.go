@@ -2,9 +2,10 @@ package forms
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var renderdParts, expectedParts []string
