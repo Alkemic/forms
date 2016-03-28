@@ -1,4 +1,4 @@
-# forms
+# forms [![Build Status](https://travis-ci.org/Alkemic/forms.svg?branch=master)](https://travis-ci.org/Alkemic/forms) [![Coverage Status](https://coveralls.io/repos/github/Alkemic/forms/badge.svg?branch=master)](https://coveralls.io/github/Alkemic/forms?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/Alkemic/forms)](https://goreportcard.com/report/github.com/Alkemic/forms) [![GoDoc](https://godoc.org/github.com/asaskevich/govalidator?status.png)](https://godoc.org/github.com/Alkemic/forms)
 I found no sufficient forms library in GO, so I decided to write one by my self. ;-)
 
 The main goal is separate validation from field rendering, so you won't find here silly structures like:
