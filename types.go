@@ -22,12 +22,15 @@ type Type interface {
 	Render(*Field, []Choice, []string) string
 }
 
+// Input is basic input type
 type Input struct{}
 
+// IsMultiValue returns if basic input allow multiple values
 func (i *Input) IsMultiValue() bool {
 	return false
 }
 
+// CleanData returns cleaned values for basic input
 func (i *Input) CleanData(values []string) interface{} {
 	if len(values) > 0 {
 		return values[0]
@@ -36,20 +39,25 @@ func (i *Input) CleanData(values []string) interface{} {
 	return ""
 }
 
+// Render returns srting with rendered basic input
 func (i *Input) Render(f *Field, cs []Choice, vs []string) string {
 	return renderInput(f.Attributes, f.Name, "input", noUseAttrs, vs)
 }
 
+// Radio is radio input type
 type Radio struct{}
 
+// IsMultiValue returns if radio input allow multiple values
 func (i *Radio) IsMultiValue() bool {
 	return true
 }
 
+// CleanData returns cleaned values for radio
 func (i *Radio) CleanData(values []string) interface{} {
 	return values
 }
 
+// Render returns srting with rendered radio input
 func (i *Radio) Render(f *Field, cs []Choice, vs []string) string {
 	field := ""
 	attrs := Attributes{}
@@ -68,10 +76,12 @@ func (i *Radio) Render(f *Field, cs []Choice, vs []string) string {
 	return field
 }
 
+// Textarea is textarea type
 type Textarea struct {
 	Input
 }
 
+// Render returns srting with rendered textarea
 func (t *Textarea) Render(f *Field, cs []Choice, vs []string) string {
 	value := ""
 	if len(vs) > 0 && vs[0] != "" {
@@ -84,12 +94,15 @@ func (t *Textarea) Render(f *Field, cs []Choice, vs []string) string {
 	)
 }
 
+// InputNumber is number input type
 type InputNumber struct{}
 
+// IsMultiValue returns if numeric input allow multiple values
 func (t *InputNumber) IsMultiValue() bool {
 	return false
 }
 
+// CleanData returns cleaned values for number input
 func (t *InputNumber) CleanData(values []string) interface{} {
 	if len(values) == 1 {
 		ival, err := strconv.ParseInt(values[0], 10, 64)
@@ -106,14 +119,17 @@ func (t *InputNumber) CleanData(values []string) interface{} {
 	return nil
 }
 
+// Render returns srting with rendered number input
 func (t *InputNumber) Render(f *Field, cs []Choice, vs []string) string {
 	return renderInput(f.Attributes, f.Name, "number", noUseAttrs, vs)
 }
 
+// Checkbox is checkbox input type
 type Checkbox struct {
 	*Input
 }
 
+// CleanData returns cleaned values for checkbox
 func (t *Checkbox) CleanData(values []string) interface{} {
 	if len(values) == 1 && values[0] != "" {
 		return true
@@ -122,6 +138,7 @@ func (t *Checkbox) CleanData(values []string) interface{} {
 	return false
 }
 
+// Render returns srting with rendered checkbox input
 func (t *Checkbox) Render(f *Field, cs []Choice, vs []string) string {
 	var attrs Attributes
 	if f.Attributes == nil {
@@ -137,18 +154,22 @@ func (t *Checkbox) Render(f *Field, cs []Choice, vs []string) string {
 	return renderInput(attrs, f.Name, "checkbox", noUseAttrs, nil)
 }
 
+// InputEmail is email input type
 type InputEmail struct {
 	*Input
 }
 
+// Render returns srting with rendered email input
 func (t *InputEmail) Render(f *Field, cs []Choice, vs []string) string {
 	return renderInput(f.Attributes, f.Name, "email", noUseAttrs, vs)
 }
 
+// InputPassword is password input type
 type InputPassword struct {
 	*Input
 }
 
+// Render returns srting with rendered password input
 func (t *InputPassword) Render(f *Field, cs []Choice, vs []string) string {
 	return renderInput(f.Attributes, f.Name, "password", noUseAttrs, vs)
 }

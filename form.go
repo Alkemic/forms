@@ -63,7 +63,7 @@ func (f *Form) IsValidMap(values map[string]interface{}) bool {
 	data := url.Values{}
 
 	for k, v := range values {
-		if IsSlice(v) {
+		if isSlice(v) {
 			s := reflect.ValueOf(v)
 			for i := 0; i < s.Len(); i++ {
 				data.Add(k, s.Index(i).String())
@@ -87,7 +87,7 @@ func (f *Form) CloseTag() string {
 	return "</form>"
 }
 
-// New is shorthand, and prefered way, to create new form.
+// New is shorthand, and preferred way, to create new form.
 // Main difference is that, this approach add field name, basing on key in map,
 // to a field instance
 // Example

@@ -5,11 +5,13 @@ import (
 	"reflect"
 )
 
-func IsSlice(value interface{}) bool {
+// isSlice if given value is slice
+func isSlice(value interface{}) bool {
 	return reflect.TypeOf(value).Kind() == reflect.Slice
 }
 
-func ValueInSlice(s string, vs []string) bool {
+// valueInSlice if given string is in slice
+func valueInSlice(s string, vs []string) bool {
 	for _, v := range vs {
 		if s == v {
 			return true
@@ -19,11 +21,12 @@ func ValueInSlice(s string, vs []string) bool {
 	return false
 }
 
+// prepareAttributes prepares attributes to use in HTML tags
 func prepareAttributes(attrs Attributes, noUse []string) string {
 	attributes := ""
 
 	for k, v := range attrs {
-		if !ValueInSlice(k, noUse) {
+		if !valueInSlice(k, noUse) {
 			attributes = attributes + fmt.Sprintf(" %s=\"%s\"", k, v)
 		}
 	}
@@ -31,6 +34,7 @@ func prepareAttributes(attrs Attributes, noUse []string) string {
 	return attributes
 }
 
+// renderInput returns rendered input HTML tag
 func renderInput(as Attributes, n, t string, noUse, vs []string) string {
 	if as == nil {
 		as = Attributes{}
