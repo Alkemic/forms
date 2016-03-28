@@ -9,8 +9,8 @@ import (
 // Attributes is structure that contains forms or fields attributes
 type Attributes map[string]interface{}
 
-// CleanedData is structure in which we store data after validation
-type CleanedData map[string]interface{}
+// Data is structure in which we store cleaned and initial data
+type Data map[string]interface{}
 
 // Form is structure that hold all fields, data, and
 type Form struct {
@@ -19,14 +19,30 @@ type Form struct {
 
 	// Form attributes
 	Attributes Attributes
+
+	// Data that are used in validation
+	IncomingData url.Values
 	// After validation is done we put data here
-	CleanedData CleanedData
+	CleanedData Data
+	// Initial data are used before form validation
+	InitialData Data
 }
 
 // Clear clears error and data on fields in form
 func (f *Form) Clear() {
+	f.CleanedData = nil
 	for _, field := range f.Fields {
 		field.Errors = []string{}
+	}
+}
+
+// SetInitial sets initial data on form
+func (f *Form) SetInitial(data Data) {
+	f.InitialData = data
+	for name, field := range f.Fields {
+		if values, ok := data[name]; ok {
+			field.InitialValue = values
+		}
 	}
 }
 
@@ -34,8 +50,9 @@ func (f *Form) Clear() {
 // every field to forms CleanedData attribute
 func (f *Form) IsValid(data url.Values) bool {
 	f.Clear()
+	f.IncomingData = data
 	isValid := true
-	cleanedData := CleanedData{}
+	cleanedData := Data{}
 
 	for name, field := range f.Fields {
 		values, _ := data[name]

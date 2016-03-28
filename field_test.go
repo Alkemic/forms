@@ -97,3 +97,53 @@ func TestFieldHandlingErrors(t *testing.T) {
 	assert.True(t, f.HasErrors())
 	assert.Equal(t, f.RenderErrors(), "<ul class=\"errors\">\n<li>Error</li>\n</li>")
 }
+
+func TestFieldInitialValueRender(t *testing.T) {
+	var f Field
+	var _t Type
+
+	_t = &Input{}
+	f = Field{Type: _t, Name: "test1"}
+	f.InitialValue = []interface{}{"a1", "b1"}
+	assert.Contains(t, f.Render(), " value=\"a1\" ")
+
+	_t = &Input{}
+	f = Field{Type: _t, Name: "test1"}
+	f.InitialValue = []interface{}{"a1", "b1"}
+	f.Value = []string{"c1"}
+	assert.Contains(t, f.Render(), " value=\"c1\" ")
+
+	_t = &Input{}
+	f = Field{Type: _t, Name: "test2"}
+	f.InitialValue = "test"
+	assert.Contains(t, f.Render(), " value=\"test\" ")
+
+	_t = &Input{}
+	f = Field{Type: _t, Name: "test2"}
+	f.InitialValue = "test"
+	f.Value = []string{"incoming2"}
+	assert.Contains(t, f.Render(), " value=\"incoming2\" ")
+}
+
+func TestFieldRenderWithInitial(t *testing.T) {
+	var f Field
+
+	f = Field{Name: "test1", InitialValue: "123"}
+	assert.Equal(t, f.Render(), "<input name=\"test1\" type=\"input\" id=\"f_test1\" value=\"123\" />")
+
+	f = Field{Name: "test1", InitialValue: []interface{}{"123", "345"}}
+	assert.Equal(t, f.Render(), "<input name=\"test1\" type=\"input\" id=\"f_test1\" value=\"123\" />")
+
+	f = Field{Name: "test1", InitialValue: "123", Value: []string{"incoming"}}
+	assert.Equal(t, f.Render(), "<input name=\"test1\" type=\"input\" id=\"f_test1\" value=\"incoming\" />")
+}
+
+func TestFieldRenderWithInitialAndErrors(t *testing.T) {
+	var f Field
+
+	f = Field{Name: "test1", InitialValue: Input{}}
+	assert.Equal(t, f.Render(), "<input name=\"test1\" type=\"input\" id=\"f_test1\" />")
+
+	f = Field{Name: "test1", InitialValue: []interface{}{Required{}, Input{}}}
+	assert.Equal(t, f.Render(), "<input name=\"test1\" type=\"input\" id=\"f_test1\" />")
+}

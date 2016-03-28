@@ -27,17 +27,17 @@ func TestFormIsValid(t *testing.T) {
 	}
 
 	assert.Equal(
-		t, f.CleanedData, *new(CleanedData),
+		t, f.CleanedData, *new(Data),
 		"CleanedData should be empty at beggining")
 
 	assert.True(t, f.IsValid(postData), "Form should pass")
 	assert.Equal(
-		t, f.CleanedData, CleanedData{"field1": "Foo", "field2": "Bar"},
+		t, f.CleanedData, Data{"field1": "Foo", "field2": "Bar"},
 		"Forms CleanedData field should contain cleaned data")
 
 	assert.True(t, f.IsValid(url.Values{}), "Form should pass")
 	assert.Equal(
-		t, f.CleanedData, CleanedData{"field1": "", "field2": ""},
+		t, f.CleanedData, Data{"field1": "", "field2": ""},
 		"Form should pass")
 }
 
@@ -61,7 +61,7 @@ func TestFromIsValidMap(t *testing.T) {
 
 	assert.True(t, f.IsValidMap(values), "Form should pass")
 	assert.Equal(
-		t, f.CleanedData, CleanedData{"field1": "Spam", "field2": "Ham"},
+		t, f.CleanedData, Data{"field1": "Spam", "field2": "Ham"},
 		"Form should pass")
 
 	values = map[string]interface{}{
@@ -70,7 +70,7 @@ func TestFromIsValidMap(t *testing.T) {
 
 	assert.True(t, f.IsValidMap(values), "Form should pass")
 	assert.Equal(
-		t, f.CleanedData, CleanedData{"field1": "Spam", "field2": ""},
+		t, f.CleanedData, Data{"field1": "Spam", "field2": ""},
 		"Form should pass")
 }
 
@@ -155,4 +155,67 @@ func TestFormCloseTag(t *testing.T) {
 	f := New(nil, Attributes{"id": "test"})
 
 	assert.Equal(t, f.CloseTag(), "</form>")
+}
+
+func TestFormSetInitial(t *testing.T) {
+	f := New(
+		map[string]*Field{
+			"field1": &Field{},
+			"field2": &Field{},
+			"field3": &Field{},
+		},
+		Attributes{"id": "test"},
+	)
+	f.SetInitial(Data{
+		"field1": "value1",
+		"field2": []string{"value2", "value3"},
+	})
+
+	assert.Equal(t, f.InitialData, Data{
+		"field1": "value1",
+		"field2": []string{"value2", "value3"},
+	})
+
+	assert.Equal(t, f.Fields["field1"].InitialValue, "value1")
+	assert.Equal(t, f.Fields["field2"].InitialValue, []string{"value2", "value3"})
+	assert.Equal(t, f.Fields["field3"].InitialValue, nil)
+}
+
+// TestFormIsValid tests data that come from request (url.Values)
+// but with initial values
+func TestFormIsValidWithInitial(t *testing.T) {
+	var postData url.Values
+	f := Form{
+		Fields: map[string]*Field{
+			"field1": &Field{
+				Type:       &Input{},
+				Validators: []Validator{&Required{}},
+			},
+			"field2": &Field{
+				Type:       &Input{},
+				Validators: []Validator{&Required{}},
+			},
+		},
+	}
+	f.SetInitial(Data{
+		"field1": "test",
+		"field2": "initial2",
+	})
+
+	postData = url.Values{
+		"field1": []string{"Foo"},
+		"fieldX": []string{"Ham"},
+	}
+	assert.False(t, f.IsValid(postData))
+	assert.Equal(t, f.CleanedData, Data(nil))
+
+	postData = url.Values{
+		"field1": []string{"Foo"},
+		"field2": []string{"Bar"},
+	}
+	assert.True(t, f.IsValid(postData))
+	assert.Equal(t, f.CleanedData, Data{"field1": "Foo", "field2": "Bar"})
+
+	assert.False(t, f.IsValid(url.Values{}))
+	assert.Equal(t, f.CleanedData, Data(nil))
 }
