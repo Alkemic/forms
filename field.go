@@ -2,6 +2,7 @@ package forms
 
 import (
 	"fmt"
+	"log"
 )
 
 // Choice is used to store choices in field
@@ -18,10 +19,11 @@ type Field struct {
 	Label           string
 	LabelAttributes Attributes
 
-	Choices    []Choice
-	Value      []string
-	Type       Type
-	Attributes Attributes
+	Choices      []Choice
+	Value        []string
+	InitialValue interface{}
+	Type         Type
+	Attributes   Attributes
 
 	Validators []Validator
 	Errors     []string
@@ -58,7 +60,28 @@ func (f *Field) Render() string {
 		f.Type = &Input{}
 	}
 
-	return f.Type.Render(f, f.Choices, f.Value)
+	var values []string
+	if f.Value == nil && f.InitialValue != nil {
+		if isSlice(f.InitialValue) {
+			for _, value := range f.InitialValue.([]interface{}) {
+				if stringValue, ok := anyToString(value); ok {
+					values = append(values, stringValue)
+				} else {
+					log.Println(value, "is incorrect type for InitialValue")
+				}
+			}
+		} else {
+			if stringValue, ok := anyToString(f.InitialValue); ok {
+				values = append(values, stringValue)
+			} else {
+				log.Println(f.InitialValue, "is incorrect type for InitialValue")
+			}
+		}
+	} else {
+		values = f.Value
+	}
+
+	return f.Type.Render(f, f.Choices, values)
 }
 
 // RenderLabel render label for field
