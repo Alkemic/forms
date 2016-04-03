@@ -9,40 +9,45 @@ Field{Required: True}
 
 Validate if user entered any data should be done in validation, and if you want ``<input />`` to have a ``required`` attribute, you need to set this in field's attributes.
 
-## Installation
-As usual, no magic here:
-```bash
-$ go get github.com/Alkemic/forms
-```
-
-## Field types
-
-### Cleaning data
-
-The incoming data need to be cleaned after succesful validation, and before we give them to user.
-By clean, we mean that we convert them to format/
-All of this transformation are done by method ``CleanData`` on ``Type``.
-For example, when we crate ``Field`` with type ``NumberInput`` in ``form.CleanedData`` we
-find a number (``int``), for ``MultiSelect`` we find a slice with all selected values.
-
 ## Usage
 
-Some day you will find here some documentation, but now here is this example and you can dig through tests files.
-```go
-import "github.com/Alkemic/forms"
+Here is a basic usage for forms. Keep in mind, that validation is separated from field,
+and inputs and albels HTML attributes are also separated.
 
-form := forms.New(
-	map[string]*forms.Field{
-		"email": &forms.Field{},
-		"password": &forms.Field{Type: &forms.InputPassword{}},
-	},
-	forms.Attributes{"id": "login-form"},
+```go
+import (
+    "fmt"
+    "net/http"
+    
+    "github.com/Alkemic/forms"
 )
 
-if form.IsValid(r.PostForm) {
-    // if valid
-} else {
-    // else not ;-)
+func someView(w http.ResponseWriter, r *http.Request) {
+	form := forms.New(
+		map[string]*forms.Field{
+			"email": &forms.Field{
+				Validators: []forms.Validator{
+					&forms.Required{},
+				},
+			},
+			"password": &forms.Field{
+				Type: &forms.InputPassword{},
+				Validators: []forms.Validator{
+					&forms.Required{},
+				},
+			},
+		},
+		forms.Attributes{"id": "login-form"},
+	)
+
+	if form.IsValid(r.PostForm) {
+    		// if valid you can access cleaned data in attribute CleanedData
+    		for k, v := range form.CleanedData{
+    			fmt.Println("key:", k, "value:", v)
+    		}
+	} else {
+    		// else not ;-)
+	}
 }
 ```
 
@@ -78,6 +83,48 @@ Eventually you can render errors by yourself
     </ul>
 {{end}}
 ```
+
+## Installation
+As usual, no magic here:
+```bash
+$ go get github.com/Alkemic/forms
+```
+
+## Field
+
+Fields are representation of single field in form, it's a container for validators and attributes.
+
+```go
+Field{
+	Type: &Input{},
+	Validators: []Validator{
+		&Required{},
+	},
+	Attributes{"id": "test"},
+	Label: "Test label",
+	LabelAttributes: Attributes{
+		"required": "required",
+		"id":   "test",
+		"attr": "value",
+	},
+}
+```
+
+When fields label is rendered (``field.RenderLabel``) attribute ``for`` is automaticly added as well 
+as attribute ``id`` to field.
+
+## Field types
+
+Types are responsible for field behavior: rendering, cleaning data and giving information if 
+field accept multiple value. Generally you should not access fields type directly, as its used by field.
+
+### Cleaning data
+
+The incoming data need to be cleaned after succesful validation, and before we give them to user.
+By clean, we mean that we convert them to format/
+All of this transformation are done by method ``CleanData`` on ``Type``.
+For example, when we crate ``Field`` with type ``NumberInput`` in ``form.CleanedData`` we
+find a number (``int``), for ``MultiSelect`` we find a slice with all selected values.
 
 ## TODO
 **Big fat note: this library is under development, and it's API may or may not change.**
