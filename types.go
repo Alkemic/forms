@@ -39,7 +39,7 @@ func (i *Input) CleanData(values []string) interface{} {
 	return ""
 }
 
-// Render returns srting with rendered basic input
+// Render returns string with rendered basic input
 func (i *Input) Render(f *Field, cs []Choice, vs []string) string {
 	return renderInput(f.Attributes, f.Name, "input", noUseAttrs, vs)
 }
@@ -57,7 +57,7 @@ func (i *Radio) CleanData(values []string) interface{} {
 	return values
 }
 
-// Render returns srting with rendered radio input
+// Render returns string with rendered radio input
 func (i *Radio) Render(f *Field, cs []Choice, vs []string) string {
 	field := ""
 	attrs := Attributes{}
@@ -81,7 +81,7 @@ type Textarea struct {
 	Input
 }
 
-// Render returns srting with rendered textarea
+// Render returns string with rendered textarea
 func (t *Textarea) Render(f *Field, cs []Choice, vs []string) string {
 	value := ""
 	if len(vs) > 0 && vs[0] != "" {
@@ -119,7 +119,7 @@ func (t *InputNumber) CleanData(values []string) interface{} {
 	return nil
 }
 
-// Render returns srting with rendered number input
+// Render returns string with rendered number input
 func (t *InputNumber) Render(f *Field, cs []Choice, vs []string) string {
 	return renderInput(f.Attributes, f.Name, "number", noUseAttrs, vs)
 }
@@ -138,7 +138,7 @@ func (t *Checkbox) CleanData(values []string) interface{} {
 	return false
 }
 
-// Render returns srting with rendered checkbox input
+// Render returns string with rendered checkbox input
 func (t *Checkbox) Render(f *Field, cs []Choice, vs []string) string {
 	var attrs Attributes
 	if f.Attributes == nil {
@@ -159,7 +159,7 @@ type InputEmail struct {
 	*Input
 }
 
-// Render returns srting with rendered email input
+// Render returns string with rendered email input
 func (t *InputEmail) Render(f *Field, cs []Choice, vs []string) string {
 	return renderInput(f.Attributes, f.Name, "email", noUseAttrs, vs)
 }
@@ -169,7 +169,87 @@ type InputPassword struct {
 	*Input
 }
 
-// Render returns srting with rendered password input
+// Render returns string with rendered password input
 func (t *InputPassword) Render(f *Field, cs []Choice, vs []string) string {
 	return renderInput(f.Attributes, f.Name, "password", noUseAttrs, vs)
+}
+
+// InputDate is date input type
+type InputDate struct {
+	*Input
+}
+
+// Render returns string with rendered date input
+func (t *InputDate) Render(f *Field, cs []Choice, vs []string) string {
+	return renderInput(f.Attributes, f.Name, "date", noUseAttrs, vs)
+}
+
+// InputTime is date input type
+type InputTime struct {
+	*Input
+}
+
+// Render returns string with rendered time input
+func (t *InputTime) Render(f *Field, cs []Choice, vs []string) string {
+	return renderInput(f.Attributes, f.Name, "time", noUseAttrs, vs)
+}
+
+// InputDateTime is date datetime (uses datetime-local) input type
+type InputDateTime struct {
+	*Input
+}
+
+// Render returns string with rendered datetime input
+func (t *InputDateTime) Render(f *Field, cs []Choice, vs []string) string {
+	return renderInput(f.Attributes, f.Name, "datetime-local", noUseAttrs, vs)
+}
+
+// InputMonth is month input type
+type InputMonth struct {
+	*Input
+}
+
+// Render returns string with rendered month input
+func (t *InputMonth) Render(f *Field, cs []Choice, vs []string) string {
+	return renderInput(f.Attributes, f.Name, "month", noUseAttrs, vs)
+}
+
+// InputWeek is week input type
+type InputWeek struct {
+	*Input
+}
+
+// Render returns string with rendered week input
+func (t *InputWeek) Render(f *Field, cs []Choice, vs []string) string {
+	return renderInput(f.Attributes, f.Name, "week", noUseAttrs, vs)
+}
+
+// InputUrl is url input type
+type InputUrl struct {
+	*Input
+}
+
+// Render returns string with rendered url input
+func (t *InputUrl) Render(f *Field, cs []Choice, vs []string) string {
+	return renderInput(f.Attributes, f.Name, "url", noUseAttrs, vs)
+}
+
+// InputTel is tel input type
+type InputTel struct {
+	*Input
+}
+
+// Render returns string with rendered tel input
+func (t *InputTel) Render(f *Field, cs []Choice, vs []string) string {
+	return renderInput(f.Attributes, f.Name, "tel", noUseAttrs, vs)
+}
+
+// InputSearch is tel search type
+type InputSearch struct {
+	*Input
+}
+
+// Render returns string with rendered search input
+func (t *InputSearch) Render(f *Field, cs []Choice, vs []string) string {
+	return renderInput(f.Attributes, f.Name, "search", noUseAttrs, vs)
 }

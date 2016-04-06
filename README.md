@@ -18,7 +18,7 @@ and inputs and albels HTML attributes are also separated.
 import (
     "fmt"
     "net/http"
-    
+
     "github.com/Alkemic/forms"
 )
 
@@ -110,12 +110,12 @@ Field{
 }
 ```
 
-When fields label is rendered (``field.RenderLabel``) attribute ``for`` is automaticly added as well 
+When fields label is rendered (``field.RenderLabel``) attribute ``for`` is automaticly added as well
 as attribute ``id`` to field.
 
 ## Field types
 
-Types are responsible for field behavior: rendering, cleaning data and giving information if 
+Types are responsible for field behavior: rendering, cleaning data and giving information if
 field accept multiple value. Generally you should not access fields type directly, as its used by field.
 
 ### Cleaning data
@@ -130,8 +130,8 @@ find a number (``int``), for ``MultiSelect`` we find a slice with all selected v
 **Big fat note: this library is under development, and it's API may or may not change.**
 Currently this library works, but I don't recomend this for prodution or even thinking about production usage. ;-)
 
-* [X] Field rendering
-* [ ] Initial data support
+* [x] Field rendering
+* [x] Initial data support
 * [ ] Internationalization
 * [ ] Field types (inc. types introduced in HTML5)
  * [x] Input
@@ -144,16 +144,16 @@ Currently this library works, but I don't recomend this for prodution or even th
  * [ ] File
  * [ ] Hidden
  * [ ] Image
- * [ ] Month
- * [ ] Password
+ * [x] Month
+ * [x] Password
  * [ ] Range
- * [ ] Telephone
+ * [x] Telephone
  * [ ] Time
- * [ ] URL
- * [ ] Week
- * [ ] Date
- * [ ] Datetime
- * [ ] Datetime-local
+ * [x] URL
+ * [x] Week
+ * [x] Date
+ * [x] Datetime
+ * [x] Datetime-local
 * [ ] Validators
  * [x] Regexp
  * [x] Required
@@ -164,3 +164,6 @@ Currently this library works, but I don't recomend this for prodution or even th
  * [ ] MinValue
  * [ ] MaxValue
  * [ ] URL
+ * [ ] Date
+ * [ ] Time
+ * [ ] DateTime
