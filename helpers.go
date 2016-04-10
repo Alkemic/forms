@@ -60,9 +60,8 @@ func anyToString(v interface{}) (string, bool) {
 	case bool:
 		if v.(bool) {
 			return "1", true
-		} else {
-			return "0", true
 		}
+		return "0", true
 	case int, int8, uint8, int16, uint16, int32, uint32, int64, uint64:
 		return fmt.Sprintf("%d", v), true
 	case float32, float64, complex64, complex128:

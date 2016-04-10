@@ -328,3 +328,51 @@ func TestTypeInputPassword(t *testing.T) {
 	f := &Field{Name: "pwd", Type: _t}
 	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"pwd\" type=\"password\" id=\"f_pwd\" />")
 }
+
+func TestTypeInputDate(t *testing.T) {
+	_t := &InputDate{}
+	f := &Field{Name: "test", Type: _t}
+	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"date\" id=\"f_test\" />")
+}
+
+func TestTypeInputTime(t *testing.T) {
+	_t := &InputTime{}
+	f := &Field{Name: "test", Type: _t}
+	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"time\" id=\"f_test\" />")
+}
+
+func TestTypeInputDateTime(t *testing.T) {
+	_t := &InputDateTime{}
+	f := &Field{Name: "test", Type: _t}
+	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"datetime-local\" id=\"f_test\" />")
+}
+
+func TestTypeInputMonth(t *testing.T) {
+	_t := &InputMonth{}
+	f := &Field{Name: "test", Type: _t}
+	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"month\" id=\"f_test\" />")
+}
+
+func TestTypeInputWeek(t *testing.T) {
+	_t := &InputWeek{}
+	f := &Field{Name: "test", Type: _t}
+	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"week\" id=\"f_test\" />")
+}
+
+func TestTypeInputURL(t *testing.T) {
+	_t := &InputURL{}
+	f := &Field{Name: "test", Type: _t}
+	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"url\" id=\"f_test\" />")
+}
+
+func TestTypeInputTel(t *testing.T) {
+	_t := &InputTel{}
+	f := &Field{Name: "test", Type: _t}
+	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"tel\" id=\"f_test\" />")
+}
+
+func TestTypeInputSearch(t *testing.T) {
+	_t := &InputSearch{}
+	f := &Field{Name: "test", Type: _t}
+	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"search\" id=\"f_test\" />")
+}

@@ -224,13 +224,13 @@ func (t *InputWeek) Render(f *Field, cs []Choice, vs []string) string {
 	return renderInput(f.Attributes, f.Name, "week", noUseAttrs, vs)
 }
 
-// InputUrl is url input type
-type InputUrl struct {
+// InputURL is url input type
+type InputURL struct {
 	*Input
 }
 
 // Render returns string with rendered url input
-func (t *InputUrl) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputURL) Render(f *Field, cs []Choice, vs []string) string {
 	return renderInput(f.Attributes, f.Name, "url", noUseAttrs, vs)
 }
 
