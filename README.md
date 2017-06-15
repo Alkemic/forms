@@ -16,10 +16,10 @@ and inputs and albels HTML attributes are also separated.
 
 ```go
 import (
-    "fmt"
-    "net/http"
+	"fmt"
+	"net/http"
 
-    "github.com/Alkemic/forms"
+	"github.com/Alkemic/forms"
 )
 
 func someView(w http.ResponseWriter, r *http.Request) {
@@ -41,12 +41,12 @@ func someView(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if form.IsValid(r.PostForm) {
-    		// if valid you can access cleaned data in attribute CleanedData
-    		for k, v := range form.CleanedData{
-    			fmt.Println("key:", k, "value:", v)
-    		}
+		// if valid you can access cleaned data in attribute CleanedData
+		for k, v := range form.CleanedData{
+			fmt.Println("key:", k, "value:", v)
+		}
 	} else {
-    		// else not ;-)
+		// else not ;-)
 	}
 }
 ```
@@ -134,36 +134,36 @@ Currently this library works, but I don't recomend this for prodution or even th
 * [x] Initial data support
 * [ ] Internationalization
 * [ ] Field types (inc. types introduced in HTML5)
- * [x] Input
- * [x] Textarea
- * [X] Radio
- * [ ] Select
- * [X] Email
- * [X] Number
- * [ ] Color
- * [ ] File
- * [ ] Hidden
- * [ ] Image
- * [x] Month
- * [x] Password
- * [ ] Range
- * [x] Telephone
- * [ ] Time
- * [x] URL
- * [x] Week
- * [x] Date
- * [x] Datetime
- * [x] Datetime-local
+  * [x] Input
+  * [x] Textarea
+  * [X] Radio
+  * [ ] Select
+  * [X] Email
+  * [X] Number
+  * [ ] Color
+  * [ ] File
+  * [ ] Hidden
+  * [ ] Image
+  * [x] Month
+  * [x] Password
+  * [ ] Range
+  * [x] Telephone
+  * [ ] Time
+  * [x] URL
+  * [x] Week
+  * [x] Date
+  * [x] Datetime
+  * [x] Datetime-local
 * [ ] Validators
- * [x] Regexp
- * [x] Required
- * [x] Email
- * [x] MinLength
- * [x] MaxLength
- * [x] InSlice
- * [ ] MinValue
- * [ ] MaxValue
- * [ ] URL
- * [ ] Date
- * [ ] Time
- * [ ] DateTime
+  * [x] Regexp
+  * [x] Required
+  * [x] Email
+  * [x] MinLength
+  * [x] MaxLength
+  * [x] InSlice
+  * [ ] MinValue
+  * [ ] MaxValue
+  * [ ] URL
+  * [ ] Date
+  * [ ] Time
+  * [ ] DateTime
