@@ -95,7 +95,7 @@ func TestFieldHandlingErrors(t *testing.T) {
 	f = Field{}
 	f.Errors = []string{"Error"}
 	assert.True(t, f.HasErrors())
-	assert.Equal(t, f.RenderErrors(), "<ul class=\"errors\">\n<li>Error</li>\n</li>")
+	assert.Equal(t, f.RenderErrors(), "<ul class=\"errors\">\n<li>Error</li>\n</ul>")
 }
 
 func TestFieldInitialValueRender(t *testing.T) {

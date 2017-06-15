@@ -107,5 +107,5 @@ func (f *Field) RenderErrors() string {
 		rendered += fmt.Sprintf("<li>%s</li>\n", err)
 	}
 
-	return fmt.Sprintf("<ul class=\"errors\">\n%s</li>", rendered)
+	return fmt.Sprintf("<ul class=\"errors\">\n%s</ul>", rendered)
 }
