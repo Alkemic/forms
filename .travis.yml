@@ -5,12 +5,13 @@ notifications:
     - alkemic7+travis-ci-notifications@gmail.com
 
 go:
-  - "1.7"
-  - "1.8"
-  - "1.9"
+  # - "1.7"
+  # - "1.8"
+  # - "1.9"
   - "1.10"
 
 before_install:
+  - env
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - if ! go get github.com/golang/tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
