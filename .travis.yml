@@ -24,8 +24,29 @@ install:
 script:
   - "$HOME/gopath/bin/goveralls -service=travis-ci"
   - go test -coverprofile=coverage.out
-  - /opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=go-forms -Dsonar.projectName="GoLang forms" -Dsonar.organization=alkemic-github -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.test.exclusions=**_test.go,coverage.out -Dsonar.go.coverage.reportPaths=coverage.out
+  - |
+    if [[ $TRAVIS_BRANCH == 'master' ]]; then
+      $SONAR_SCANNER_CMD
+    elif [[ "$TRAVIS_PULL_REQUEST" != "false" ]];
+      $SONAR_SCANNER_CMD \
+        -Dsonar.analysis.mode=preview \
+        -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
+        -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
+        -Dsonar.github.oauth=$GITHUB_ACCESS_TOKEN
+    fi
 
 env:
   global:
-    secure: XcFDsRJ7kJgA+xrBaue4XfWV5mdyz3gqbQczhb6XVVxgx5hkKegFKN/VNGLxDm0loCrEOA6g+gmbwDmLnQSQW7hECKkRtrbEzu51VUkmk5kDZjvXMdVuCOKpskdsIPo+mGHltb47bs7LEBWzr5QyahIjEF+Gpjz2TIDrJpI24PJK4x79KmDBgoHbFU63yGFhl409tAFVyqieeayRGcHctU44c/2UWsxG/d13DLFWj70YEXpqV4zw0nb+z2f29oUNCjULHjdIQrRz/h0ZP2Lqh6WP1geRV/dN0a06Mdf3TDU3R5E+qez2zjkRdGD2hBeuefu0NrRXFq58O8qAhhenMpH2NzbzhiHAwpPQDsopu9Oo/1/e0WBnejS3igiHSqQFSn3UH+J/OLuMd1dTWm9iQGWqY4c36P9eM5MJPpTCryWJB+qZcBPT+kvyRq5Hj3LrnRhxXCZX/9tszccNmoE1Ikvu5HILEaRjLp0/p9n/htpEs8NY0eSSmyG4IDUvEXz+x2tUE7TzFpjXgcHyB1KWB1z1KadJhdHAMOJGs7xEpBOYQfWr87GO1qUVGVGXtE4GI4WUHg9SFxWc6C8lGxdiFAIFmSkXYQX9gBh3T/R859ATakgIkgeh+VPi73GUFnODjPgHqql3MTkkExT7bREuQQExtwCC0NMhjToIPN7kpyk=
+    - >
+      SONAR_SCANNER_CMD=/opt/sonar-scanner/bin/sonar-scanner
+        -Dsonar.projectKey=go-forms
+        -Dsonar.projectName="GoLang forms"
+        -Dsonar.organization=alkemic-github
+        -Dsonar.sources=.
+        -Dsonar.host.url=https://sonarcloud.io
+        -Dsonar.login=$SONAR_TOKEN
+        -Dsonar.test.exclusions=**_test.go,coverage.out
+        -Dsonar.go.coverage.reportPaths=coverage.out
+
+    - secure: XcFDsRJ7kJgA+xrBaue4XfWV5mdyz3gqbQczhb6XVVxgx5hkKegFKN/VNGLxDm0loCrEOA6g+gmbwDmLnQSQW7hECKkRtrbEzu51VUkmk5kDZjvXMdVuCOKpskdsIPo+mGHltb47bs7LEBWzr5QyahIjEF+Gpjz2TIDrJpI24PJK4x79KmDBgoHbFU63yGFhl409tAFVyqieeayRGcHctU44c/2UWsxG/d13DLFWj70YEXpqV4zw0nb+z2f29oUNCjULHjdIQrRz/h0ZP2Lqh6WP1geRV/dN0a06Mdf3TDU3R5E+qez2zjkRdGD2hBeuefu0NrRXFq58O8qAhhenMpH2NzbzhiHAwpPQDsopu9Oo/1/e0WBnejS3igiHSqQFSn3UH+J/OLuMd1dTWm9iQGWqY4c36P9eM5MJPpTCryWJB+qZcBPT+kvyRq5Hj3LrnRhxXCZX/9tszccNmoE1Ikvu5HILEaRjLp0/p9n/htpEs8NY0eSSmyG4IDUvEXz+x2tUE7TzFpjXgcHyB1KWB1z1KadJhdHAMOJGs7xEpBOYQfWr87GO1qUVGVGXtE4GI4WUHg9SFxWc6C8lGxdiFAIFmSkXYQX9gBh3T/R859ATakgIkgeh+VPi73GUFnODjPgHqql3MTkkExT7bREuQQExtwCC0NMhjToIPN7kpyk=
+    - secure: Xlr69M+fyhi7q9NKX+mvZkrdLNGtljSOlwCjDDQoBG6rD3r62MzOZ2YPXBczvb4jAHtAF16AeDn7chlzGEPIuM26gRLyLx7RKmhJWf9pi/9cwOKYXw5sF4WkFfMYIEgQNV/t59f2Jm8T68RHlnziHnWekGBeoEOanKprRO7CeGcKfN2Xd8HVU+6fMlW72m6g0p3H9WOoDMRmXO8vQWjZ9QvMZA6sTNG/AvOhfA8KVXM+ET88sHOwvc/4sFsVK/rWcFO1nT1lcYnuQdY38jUsOi3QnSVZ3Wp2DV+Ju4LfjWCSi5h6xLD181+fg6mcsQOG0RznSzfWNk57vYDZI+wIpjM/tnwf3m+9EflpeYYFzDAdepdJnP4kaRz4Qaod4/Qvk7yPqxh8VD/G/eDfc2nJ2Mi2F9MIjKopaO2piu+vsrQkSmga4gV8TH+wjNXjwuM0PVL4Jf8ADPjt90Ix1AsKpRUqBrOz2g5C0v/nchYNIkaAHWDC+iIIspsbmPMn8BMRva0ugfjKGBwixQkgz1OR/Ab1bdHEf1RNw9HCFMucspoO1um+d/U8TZEjk+28X8mB0DpVDs35/uvh0JkclYCZq0kDBCE/Lh1loXdKrKv8kTiRIFP17sKB6TGINiWu/bFLzWAUkZ6bS8NOzuHuqpS/SmkLJs2JqDF6EpmVg6XPYK8=
