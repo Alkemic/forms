@@ -5,18 +5,43 @@ notifications:
     - alkemic7+travis-ci-notifications@gmail.com
 
 go:
-  - "1.3"
-  - "1.4"
-  - "1.5"
-  - "1.6"
+  # - "1.7"
+  # - "1.8"
+  # - "1.9"
+  - "1.10"
 
 before_install:
+  - env
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - if ! go get github.com/golang/tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
+
+  - wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip -O /tmp/sonar-scanner-cli-3.2.0.1227-linux.zip
+  - (cd /opt; unzip /tmp/sonar-scanner-cli-3.2.0.1227-linux.zip; mv sonar-scanner-3.2.0.1227-linux/ sonar-scanner)
 
 install:
   - go get github.com/stretchr/testify/assert
 
 script:
-  - $HOME/gopath/bin/goveralls -service=travis-ci
+  - "$HOME/gopath/bin/goveralls -service=travis-ci"
+  - go test -coverprofile=coverage.out
+  - |
+    if [[ "$TRAVIS_EVENT_TYPE" == "push" && "$TRAVIS_BRANCH" == "master" ]]; then
+      $SONAR_SCANNER_CMD
+    elif [[ "$TRAVIS_EVENT_TYPE" == "pull_request" ]]; then
+      $SONAR_SCANNER_CMD \
+        -Dsonar.analysis.mode=preview \
+        -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
+        -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
+        -Dsonar.github.oauth=$GITHUB_ACCESS_TOKEN
+    fi
+
+env:
+  global:
+    - SONAR_SCANNER_CMD="/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=go-forms -Dsonar.organization=alkemic-github -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.test.exclusions=**_test.go,coverage.out -Dsonar.go.coverage.reportPaths=coverage.out"
+    - secure: XcFDsRJ7kJgA+xrBaue4XfWV5mdyz3gqbQczhb6XVVxgx5hkKegFKN/VNGLxDm0loCrEOA6g+gmbwDmLnQSQW7hECKkRtrbEzu51VUkmk5kDZjvXMdVuCOKpskdsIPo+mGHltb47bs7LEBWzr5QyahIjEF+Gpjz2TIDrJpI24PJK4x79KmDBgoHbFU63yGFhl409tAFVyqieeayRGcHctU44c/2UWsxG/d13DLFWj70YEXpqV4zw0nb+z2f29oUNCjULHjdIQrRz/h0ZP2Lqh6WP1geRV/dN0a06Mdf3TDU3R5E+qez2zjkRdGD2hBeuefu0NrRXFq58O8qAhhenMpH2NzbzhiHAwpPQDsopu9Oo/1/e0WBnejS3igiHSqQFSn3UH+J/OLuMd1dTWm9iQGWqY4c36P9eM5MJPpTCryWJB+qZcBPT+kvyRq5Hj3LrnRhxXCZX/9tszccNmoE1Ikvu5HILEaRjLp0/p9n/htpEs8NY0eSSmyG4IDUvEXz+x2tUE7TzFpjXgcHyB1KWB1z1KadJhdHAMOJGs7xEpBOYQfWr87GO1qUVGVGXtE4GI4WUHg9SFxWc6C8lGxdiFAIFmSkXYQX9gBh3T/R859ATakgIkgeh+VPi73GUFnODjPgHqql3MTkkExT7bREuQQExtwCC0NMhjToIPN7kpyk=
+    - secure: FVB2r9lpsu3Jr/Hw9sf4AbOIjF5lWDktHbdQV7p+IJ7njJlDbcURAeAB/2BKruITkWNIAlcYrBxNTLEzbI4HN+/Ko4/tof0ciiDD0wOflmZslV3GJ5B2N5whsVhFFtqiEBHHM60SAR8Pp4ChYUYbFe5svZuWQecE2lrF7o3ncTZuQixsQClGKRMQhEJnlpf8r2B/jrZXB9gJeE3SN6du6OuqcmvWwJRoHti0FmUFRVuE9/1TbIA+lFoP0vejQLl23QamAH0BLZisUZr8INbtbv/roPV2VI06Y2RrIoGXFn3zodPApAccembpHiQR5Zw78By0c17oi2Q2kKc53SlKl9YV4JBBwSPEl5jlaI/WPMncmaqGdl72v18G+nbBpvorb5Yg+cQIKwijwiJIU6ns6aLNIng/3s/CSK1V5Woxuj3GwvN5qdJKO2IbkJ60NL5k1OeSpcu4m2ci6Qby62j0F4V+nPlOugH8P4OQIGYofc4G6z0fchPLaU+IUi97QJHwJhfBkuAOmzrtoVg6a2vKpEELAXASNoGzi1V0GbSIeZjWOgMnIZ6FZVT7p6PUmUmsPW49WkX9LmUIfQa8vxJrm0Q+f6xpFjQxapqSC8YV1jVKtCArjhHzUdHmOaGhflRnybT+0Htu++XRHn6Hghi28vQ35uQz7BR1kutlS/MoFpk=
+
+branches:
+  only:
+    master
