@@ -26,9 +26,9 @@ script:
   - "$HOME/gopath/bin/goveralls -service=travis-ci"
   - go test -coverprofile=coverage.out
   - |
-    if [[ $TRAVIS_BRANCH == 'master' ]]; then
+    if [[ "$TRAVIS_EVENT_TYPE" == "push" && "$TRAVIS_BRANCH" == "master" ]]; then
       $SONAR_SCANNER_CMD
-    elif [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then
+    elif [[ "$TRAVIS_EVENT_TYPE" == "pull_request" ]]; then
       $SONAR_SCANNER_CMD \
         -Dsonar.analysis.mode=preview \
         -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
