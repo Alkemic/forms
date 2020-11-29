@@ -21,6 +21,8 @@ type Form struct {
 	// Form attributes
 	Attributes Attributes
 
+	Errors     []string
+
 	// Data that are used in validation
 	IncomingData url.Values
 	// After validation is done we put data here
@@ -103,6 +105,30 @@ func (f *Form) OpenTag() template.HTML {
 // CloseTag render closing tag for form
 func (f *Form) CloseTag() template.HTML {
 	return "</form>"
+}
+
+// HasErrors returns information if there are errors in form.
+func (f *Form) HasErrors() bool {
+	return len(f.Errors) > 0
+}
+
+// AddError adds new error string to form.
+func (f *Form) AddError(error string) {
+	f.Errors = append(f.Errors, error)
+}
+
+// RenderErrors render all errors as list (<ul>) with class "errors".
+func (f *Form) RenderErrors() template.HTML {
+	if !f.HasErrors() {
+		return ""
+	}
+
+	rendered := ""
+	for _, err := range f.Errors {
+		rendered += fmt.Sprintf("<li>%s</li>\n", err)
+	}
+
+	return template.HTML(fmt.Sprintf("<ul class=\"errors\">\n%s</ul>", rendered))
 }
 
 // New is shorthand, and preferred way, to create new form.
