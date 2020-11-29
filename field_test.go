@@ -1,6 +1,7 @@
 package forms
 
 import (
+	"html/template"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -91,11 +92,11 @@ func TestFieldHandlingErrors(t *testing.T) {
 	var f Field
 	f = Field{}
 	assert.False(t, f.HasErrors())
-	assert.Equal(t, f.RenderErrors(), "")
+	assert.Equal(t, f.RenderErrors(), template.HTML(""))
 	f = Field{}
 	f.Errors = []string{"Error"}
 	assert.True(t, f.HasErrors())
-	assert.Equal(t, f.RenderErrors(), "<ul class=\"errors\">\n<li>Error</li>\n</ul>")
+	assert.Equal(t, f.RenderErrors(), template.HTML("<ul class=\"errors\">\n<li>Error</li>\n</ul>"))
 }
 
 func TestFieldInitialValueRender(t *testing.T) {
@@ -129,21 +130,21 @@ func TestFieldRenderWithInitial(t *testing.T) {
 	var f Field
 
 	f = Field{Name: "test1", InitialValue: "123"}
-	assert.Equal(t, f.Render(), "<input name=\"test1\" type=\"input\" id=\"f_test1\" value=\"123\" />")
+	assert.Equal(t, f.Render(), template.HTML("<input name=\"test1\" type=\"input\" id=\"f_test1\" value=\"123\" />"))
 
 	f = Field{Name: "test1", InitialValue: []interface{}{"123", "345"}}
-	assert.Equal(t, f.Render(), "<input name=\"test1\" type=\"input\" id=\"f_test1\" value=\"123\" />")
+	assert.Equal(t, f.Render(), template.HTML("<input name=\"test1\" type=\"input\" id=\"f_test1\" value=\"123\" />"))
 
 	f = Field{Name: "test1", InitialValue: "123", Value: []string{"incoming"}}
-	assert.Equal(t, f.Render(), "<input name=\"test1\" type=\"input\" id=\"f_test1\" value=\"incoming\" />")
+	assert.Equal(t, f.Render(), template.HTML("<input name=\"test1\" type=\"input\" id=\"f_test1\" value=\"incoming\" />"))
 }
 
 func TestFieldRenderWithInitialAndErrors(t *testing.T) {
 	var f Field
 
 	f = Field{Name: "test1", InitialValue: Input{}}
-	assert.Equal(t, f.Render(), "<input name=\"test1\" type=\"input\" id=\"f_test1\" />")
+	assert.Equal(t, f.Render(), template.HTML("<input name=\"test1\" type=\"input\" id=\"f_test1\" />"))
 
 	f = Field{Name: "test1", InitialValue: []interface{}{Required{}, Input{}}}
-	assert.Equal(t, f.Render(), "<input name=\"test1\" type=\"input\" id=\"f_test1\" />")
+	assert.Equal(t, f.Render(), template.HTML("<input name=\"test1\" type=\"input\" id=\"f_test1\" />"))
 }

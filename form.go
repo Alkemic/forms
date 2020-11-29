@@ -2,6 +2,7 @@ package forms
 
 import (
 	"fmt"
+	"html/template"
 	"net/url"
 	"reflect"
 )
@@ -95,12 +96,12 @@ func (f *Form) IsValidMap(values map[string]interface{}) bool {
 }
 
 // OpenTag render opening tag of the form with given attributes
-func (f *Form) OpenTag() string {
-	return fmt.Sprintf("<form%s>", prepareAttributes(f.Attributes, nil))
+func (f *Form) OpenTag() template.HTML {
+	return template.HTML(fmt.Sprintf("<form%s>", prepareAttributes(f.Attributes, nil)))
 }
 
 // CloseTag render closing tag for form
-func (f *Form) CloseTag() string {
+func (f *Form) CloseTag() template.HTML {
 	return "</form>"
 }
 

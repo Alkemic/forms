@@ -2,6 +2,7 @@ package forms
 
 import (
 	"fmt"
+	"html/template"
 	"reflect"
 )
 
@@ -35,7 +36,7 @@ func prepareAttributes(attrs Attributes, noUse []string) string {
 }
 
 // renderInput returns rendered input HTML tag
-func renderInput(as Attributes, n, t string, noUse, vs []string) string {
+func renderInput(as Attributes, n, t string, noUse, vs []string) template.HTML {
 	if as == nil {
 		as = Attributes{}
 	}
@@ -50,7 +51,7 @@ func renderInput(as Attributes, n, t string, noUse, vs []string) string {
 		attributes = attributes + fmt.Sprintf(" value=\"%s\"", vs[0])
 	}
 
-	return fmt.Sprintf("<input name=\"%s\" type=\"%s\"%s />", n, t, attributes)
+	return template.HTML(fmt.Sprintf("<input name=\"%s\" type=\"%s\"%s />", n, t, attributes))
 }
 
 func anyToString(v interface{}) (string, bool) {

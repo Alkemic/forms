@@ -2,6 +2,7 @@ package forms
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 )
 
@@ -55,7 +56,7 @@ func (f *Field) IsValid(values []string) (isValid bool) {
 }
 
 // Render field (in matter of fact, only passing through to render method on type)
-func (f *Field) Render() string {
+func (f *Field) Render() template.HTML {
 	if f.Type == nil {
 		f.Type = &Input{}
 	}
@@ -85,10 +86,10 @@ func (f *Field) Render() string {
 }
 
 // RenderLabel render label for field
-func (f *Field) RenderLabel() string {
+func (f *Field) RenderLabel() template.HTML {
 	attributes := prepareAttributes(f.LabelAttributes, []string{"for"})
 
-	return fmt.Sprintf("<label for=\"f_%s\"%s>%s</label>", f.Name, attributes, f.Label)
+	return template.HTML(fmt.Sprintf("<label for=\"f_%s\"%s>%s</label>", f.Name, attributes, f.Label))
 }
 
 // HasErrors returns information if there are validation errors in this field
@@ -97,7 +98,7 @@ func (f *Field) HasErrors() bool {
 }
 
 // RenderErrors render all errors as list (<ul>) with class "errors"
-func (f *Field) RenderErrors() string {
+func (f *Field) RenderErrors() template.HTML {
 	if !f.HasErrors() {
 		return ""
 	}
@@ -107,5 +108,5 @@ func (f *Field) RenderErrors() string {
 		rendered += fmt.Sprintf("<li>%s</li>\n", err)
 	}
 
-	return fmt.Sprintf("<ul class=\"errors\">\n%s</ul>", rendered)
+	return template.HTML(fmt.Sprintf("<ul class=\"errors\">\n%s</ul>", rendered))
 }

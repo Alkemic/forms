@@ -2,13 +2,12 @@ package forms
 
 import (
 	"fmt"
+	"html/template"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
-
-var renderdParts, expectedParts []string
 
 type TypeTestsResults []struct {
 	values []string
@@ -54,9 +53,9 @@ func TestTypeInput(t *testing.T) {
 	executeTypeTests(t, _t, resultsSet)
 
 	f := &Field{Name: "test1", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test1\" type=\"input\" id=\"f_test1\" />")
-	assert.Equal(t, _t.Render(f, nil, []string{""}), "<input name=\"test1\" type=\"input\" id=\"f_test1\" />")
-	assert.Equal(t, _t.Render(f, nil, []string{"accdddaabbcce"}), "<input name=\"test1\" type=\"input\" id=\"f_test1\" value=\"accdddaabbcce\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"test1\" type=\"input\" id=\"f_test1\" />"))
+	assert.Equal(t, _t.Render(f, nil, []string{""}), template.HTML("<input name=\"test1\" type=\"input\" id=\"f_test1\" />"))
+	assert.Equal(t, _t.Render(f, nil, []string{"accdddaabbcce"}), template.HTML("<input name=\"test1\" type=\"input\" id=\"f_test1\" value=\"accdddaabbcce\" />"))
 }
 
 func TestTypeRadio(t *testing.T) {
@@ -82,7 +81,7 @@ func TestTypeRadio(t *testing.T) {
 	f := &Field{Name: "test1", Type: _t}
 	executeTypeTests(t, _t, resultsSet)
 
-	r := strings.Split(_t.Render(f, choices, []string{}), "\n")
+	r := strings.Split(string(_t.Render(f, choices, []string{})), "\n")
 
 	assert.Len(t, r, 4)
 
@@ -116,7 +115,7 @@ func TestTypeRadio(t *testing.T) {
 	assert.Equal(t, r[3], "")
 
 	f.Attributes = Attributes{"test": "ok"}
-	r = strings.Split(_t.Render(f, choices, []string{}), "\n")
+	r = strings.Split(string(_t.Render(f, choices, []string{})), "\n")
 	assert.Len(t, r, 4)
 
 	assert.Len(t, r[0], 119)
@@ -152,7 +151,7 @@ func TestTypeRadio(t *testing.T) {
 	assert.Equal(t, r[3], "")
 
 	// Empty choices
-	assert.Equal(t, _t.Render(f, nil, []string{}), "")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML(""))
 }
 
 func TestTypeTextarea(t *testing.T) {
@@ -172,9 +171,9 @@ func TestTypeTextarea(t *testing.T) {
 	executeTypeTests(t, _t, resultsSet)
 
 	f := &Field{Name: "test1", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<textarea id=\"f_test1\" name=\"test1\"></textarea>")
-	assert.Equal(t, _t.Render(f, nil, []string{""}), "<textarea id=\"f_test1\" name=\"test1\"></textarea>")
-	assert.Equal(t, _t.Render(f, nil, []string{"accdddaabbcce"}), "<textarea id=\"f_test1\" name=\"test1\">accdddaabbcce</textarea>")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<textarea id=\"f_test1\" name=\"test1\"></textarea>"))
+	assert.Equal(t, _t.Render(f, nil, []string{""}), template.HTML("<textarea id=\"f_test1\" name=\"test1\"></textarea>"))
+	assert.Equal(t, _t.Render(f, nil, []string{"accdddaabbcce"}), template.HTML("<textarea id=\"f_test1\" name=\"test1\">accdddaabbcce</textarea>"))
 }
 
 func TestTypeInputNumber(t *testing.T) {
@@ -197,9 +196,9 @@ func TestTypeInputNumber(t *testing.T) {
 	executeTypeTests(t, _t, resultsSet)
 
 	f := &Field{Name: "test1", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test1\" type=\"number\" id=\"f_test1\" />")
-	assert.Equal(t, _t.Render(f, nil, []string{""}), "<input name=\"test1\" type=\"number\" id=\"f_test1\" />")
-	assert.Equal(t, _t.Render(f, nil, []string{"11"}), "<input name=\"test1\" type=\"number\" id=\"f_test1\" value=\"11\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"test1\" type=\"number\" id=\"f_test1\" />"))
+	assert.Equal(t, _t.Render(f, nil, []string{""}), template.HTML("<input name=\"test1\" type=\"number\" id=\"f_test1\" />"))
+	assert.Equal(t, _t.Render(f, nil, []string{"11"}), template.HTML("<input name=\"test1\" type=\"number\" id=\"f_test1\" value=\"11\" />"))
 }
 
 func TestTypeChecbox(t *testing.T) {
@@ -226,59 +225,59 @@ func TestTypeChecbox(t *testing.T) {
 
 	rendered := _t.Render(f, nil, nil)
 	assert.Len(t, rendered, 51)
-	assert.True(t, strings.HasPrefix(rendered, "<input "))
+	assert.True(t, strings.HasPrefix(string(rendered), "<input "))
 	assert.Contains(t, rendered, " name=\"test1\" ")
 	assert.Contains(t, rendered, " id=\"f_test1\" ")
-	assert.True(t, strings.HasSuffix(rendered, " />"))
+	assert.True(t, strings.HasSuffix(string(rendered), " />"))
 	assert.NotContains(t, rendered, " checked=\"checked\" ")
 
 	rendered = _t.Render(f, nil, []string{""})
 	assert.Len(t, rendered, 51)
-	assert.True(t, strings.HasPrefix(rendered, "<input "))
+	assert.True(t, strings.HasPrefix(string(rendered), "<input "))
 	assert.Contains(t, rendered, " name=\"test1\" ")
 	assert.Contains(t, rendered, " id=\"f_test1\" ")
-	assert.True(t, strings.HasSuffix(rendered, " />"))
+	assert.True(t, strings.HasSuffix(string(rendered), " />"))
 	assert.NotContains(t, rendered, " checked=\"checked\" ")
 
 	rendered = _t.Render(f, nil, []string{"true"})
 	assert.Len(t, rendered, 69)
-	assert.True(t, strings.HasPrefix(rendered, "<input "))
+	assert.True(t, strings.HasPrefix(string(rendered), "<input "))
 	assert.Contains(t, rendered, " name=\"test1\" ")
 	assert.Contains(t, rendered, " checked=\"checked\" ")
 	assert.Contains(t, rendered, " id=\"f_test1\" ")
-	assert.True(t, strings.HasSuffix(rendered, " />"))
+	assert.True(t, strings.HasSuffix(string(rendered), " />"))
 
 	f.Attributes = Attributes{"test": "ok"}
 
 	rendered = _t.Render(f, nil, nil)
 	assert.Len(t, rendered, 61)
-	assert.True(t, strings.HasPrefix(rendered, "<input "))
+	assert.True(t, strings.HasPrefix(string(rendered), "<input "))
 	assert.Contains(t, rendered, " name=\"test1\" ")
 	assert.Contains(t, rendered, " type=\"checkbox\" ")
 	assert.Contains(t, rendered, " test=\"ok\" ")
 	assert.Contains(t, rendered, " id=\"f_test1\" ")
-	assert.True(t, strings.HasSuffix(rendered, " />"))
+	assert.True(t, strings.HasSuffix(string(rendered), " />"))
 	assert.NotContains(t, rendered, " checked=\"checked\" ")
 
 	rendered = _t.Render(f, nil, []string{""})
 	assert.Len(t, rendered, 61)
-	assert.True(t, strings.HasPrefix(rendered, "<input "))
+	assert.True(t, strings.HasPrefix(string(rendered), "<input "))
 	assert.Contains(t, rendered, " name=\"test1\" ")
 	assert.Contains(t, rendered, " type=\"checkbox\" ")
 	assert.Contains(t, rendered, " test=\"ok\" ")
 	assert.Contains(t, rendered, " id=\"f_test1\" ")
-	assert.True(t, strings.HasSuffix(rendered, " />"))
+	assert.True(t, strings.HasSuffix(string(rendered), " />"))
 	assert.NotContains(t, rendered, " checked=\"checked\" ")
 
 	rendered = _t.Render(f, nil, []string{"true"})
 	assert.Len(t, rendered, 79)
-	assert.True(t, strings.HasPrefix(rendered, "<input "))
+	assert.True(t, strings.HasPrefix(string(rendered), "<input "))
 	assert.Contains(t, rendered, " name=\"test1\" ")
 	assert.Contains(t, rendered, " type=\"checkbox\" ")
 	assert.Contains(t, rendered, " test=\"ok\" ")
 	assert.Contains(t, rendered, " checked=\"checked\" ")
 	assert.Contains(t, rendered, " id=\"f_test1\" ")
-	assert.True(t, strings.HasSuffix(rendered, " />"))
+	assert.True(t, strings.HasSuffix(string(rendered), " />"))
 }
 
 func TestTypeInputEmail(t *testing.T) {
@@ -301,9 +300,9 @@ func TestTypeInputEmail(t *testing.T) {
 	executeTypeTests(t, _t, resultsSet)
 
 	f := &Field{Name: "test1", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test1\" type=\"email\" id=\"f_test1\" />")
-	assert.Equal(t, _t.Render(f, nil, []string{""}), "<input name=\"test1\" type=\"email\" id=\"f_test1\" />")
-	assert.Equal(t, _t.Render(f, nil, []string{"test_value"}), "<input name=\"test1\" type=\"email\" id=\"f_test1\" value=\"test_value\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"test1\" type=\"email\" id=\"f_test1\" />"))
+	assert.Equal(t, _t.Render(f, nil, []string{""}), template.HTML("<input name=\"test1\" type=\"email\" id=\"f_test1\" />"))
+	assert.Equal(t, _t.Render(f, nil, []string{"test_value"}), template.HTML("<input name=\"test1\" type=\"email\" id=\"f_test1\" value=\"test_value\" />"))
 }
 
 func TestTypeInputPassword(t *testing.T) {
@@ -326,53 +325,53 @@ func TestTypeInputPassword(t *testing.T) {
 	executeTypeTests(t, _t, resultsSet)
 
 	f := &Field{Name: "pwd", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"pwd\" type=\"password\" id=\"f_pwd\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"pwd\" type=\"password\" id=\"f_pwd\" />"))
 }
 
 func TestTypeInputDate(t *testing.T) {
 	_t := &InputDate{}
 	f := &Field{Name: "test", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"date\" id=\"f_test\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"test\" type=\"date\" id=\"f_test\" />"))
 }
 
 func TestTypeInputTime(t *testing.T) {
 	_t := &InputTime{}
 	f := &Field{Name: "test", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"time\" id=\"f_test\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"test\" type=\"time\" id=\"f_test\" />"))
 }
 
 func TestTypeInputDateTime(t *testing.T) {
 	_t := &InputDateTime{}
 	f := &Field{Name: "test", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"datetime-local\" id=\"f_test\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"test\" type=\"datetime-local\" id=\"f_test\" />"))
 }
 
 func TestTypeInputMonth(t *testing.T) {
 	_t := &InputMonth{}
 	f := &Field{Name: "test", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"month\" id=\"f_test\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"test\" type=\"month\" id=\"f_test\" />"))
 }
 
 func TestTypeInputWeek(t *testing.T) {
 	_t := &InputWeek{}
 	f := &Field{Name: "test", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"week\" id=\"f_test\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"test\" type=\"week\" id=\"f_test\" />"))
 }
 
 func TestTypeInputURL(t *testing.T) {
 	_t := &InputURL{}
 	f := &Field{Name: "test", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"url\" id=\"f_test\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"test\" type=\"url\" id=\"f_test\" />"))
 }
 
 func TestTypeInputTel(t *testing.T) {
 	_t := &InputTel{}
 	f := &Field{Name: "test", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"tel\" id=\"f_test\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"test\" type=\"tel\" id=\"f_test\" />"))
 }
 
 func TestTypeInputSearch(t *testing.T) {
 	_t := &InputSearch{}
 	f := &Field{Name: "test", Type: _t}
-	assert.Equal(t, _t.Render(f, nil, []string{}), "<input name=\"test\" type=\"search\" id=\"f_test\" />")
+	assert.Equal(t, _t.Render(f, nil, []string{}), template.HTML("<input name=\"test\" type=\"search\" id=\"f_test\" />"))
 }

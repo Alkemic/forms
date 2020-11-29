@@ -2,6 +2,7 @@ package forms
 
 import (
 	"fmt"
+	"html/template"
 	"strconv"
 )
 
@@ -19,7 +20,7 @@ type Type interface {
 	// Cleans data before it goes to user
 	CleanData(values []string) interface{}
 	// Render form
-	Render(*Field, []Choice, []string) string
+	Render(*Field, []Choice, []string) template.HTML
 }
 
 // Input is basic input type
@@ -40,7 +41,7 @@ func (i *Input) CleanData(values []string) interface{} {
 }
 
 // Render returns string with rendered basic input
-func (i *Input) Render(f *Field, cs []Choice, vs []string) string {
+func (i *Input) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "input", noUseAttrs, vs)
 }
 
@@ -58,7 +59,7 @@ func (i *Radio) CleanData(values []string) interface{} {
 }
 
 // Render returns string with rendered radio input
-func (i *Radio) Render(f *Field, cs []Choice, vs []string) string {
+func (i *Radio) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	field := ""
 	attrs := Attributes{}
 	for _, c := range cs {
@@ -73,7 +74,7 @@ func (i *Radio) Render(f *Field, cs []Choice, vs []string) string {
 			c.Label,
 		)
 	}
-	return field
+	return template.HTML(field)
 }
 
 // Textarea is textarea type
@@ -82,16 +83,16 @@ type Textarea struct {
 }
 
 // Render returns string with rendered textarea
-func (t *Textarea) Render(f *Field, cs []Choice, vs []string) string {
+func (t *Textarea) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	value := ""
 	if len(vs) > 0 && vs[0] != "" {
 		value = vs[0]
 	}
 
-	return fmt.Sprintf(
+	return template.HTML(fmt.Sprintf(
 		"<textarea id=\"f_%s\" name=\"%s\"%s>%s</textarea>", f.Name, f.Name,
 		prepareAttributes(f.Attributes, noUseAttrs), value,
-	)
+	))
 }
 
 // InputNumber is number input type
@@ -120,7 +121,7 @@ func (t *InputNumber) CleanData(values []string) interface{} {
 }
 
 // Render returns string with rendered number input
-func (t *InputNumber) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputNumber) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "number", noUseAttrs, vs)
 }
 
@@ -139,7 +140,7 @@ func (t *Checkbox) CleanData(values []string) interface{} {
 }
 
 // Render returns string with rendered checkbox input
-func (t *Checkbox) Render(f *Field, cs []Choice, vs []string) string {
+func (t *Checkbox) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	var attrs Attributes
 	if f.Attributes == nil {
 		attrs = Attributes{}
@@ -160,7 +161,7 @@ type InputEmail struct {
 }
 
 // Render returns string with rendered email input
-func (t *InputEmail) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputEmail) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "email", noUseAttrs, vs)
 }
 
@@ -170,7 +171,7 @@ type InputPassword struct {
 }
 
 // Render returns string with rendered password input
-func (t *InputPassword) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputPassword) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "password", noUseAttrs, vs)
 }
 
@@ -180,7 +181,7 @@ type InputDate struct {
 }
 
 // Render returns string with rendered date input
-func (t *InputDate) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputDate) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "date", noUseAttrs, vs)
 }
 
@@ -190,7 +191,7 @@ type InputTime struct {
 }
 
 // Render returns string with rendered time input
-func (t *InputTime) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputTime) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "time", noUseAttrs, vs)
 }
 
@@ -200,7 +201,7 @@ type InputDateTime struct {
 }
 
 // Render returns string with rendered datetime input
-func (t *InputDateTime) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputDateTime) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "datetime-local", noUseAttrs, vs)
 }
 
@@ -210,7 +211,7 @@ type InputMonth struct {
 }
 
 // Render returns string with rendered month input
-func (t *InputMonth) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputMonth) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "month", noUseAttrs, vs)
 }
 
@@ -220,7 +221,7 @@ type InputWeek struct {
 }
 
 // Render returns string with rendered week input
-func (t *InputWeek) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputWeek) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "week", noUseAttrs, vs)
 }
 
@@ -230,7 +231,7 @@ type InputURL struct {
 }
 
 // Render returns string with rendered url input
-func (t *InputURL) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputURL) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "url", noUseAttrs, vs)
 }
 
@@ -240,7 +241,7 @@ type InputTel struct {
 }
 
 // Render returns string with rendered tel input
-func (t *InputTel) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputTel) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "tel", noUseAttrs, vs)
 }
 
@@ -250,6 +251,6 @@ type InputSearch struct {
 }
 
 // Render returns string with rendered search input
-func (t *InputSearch) Render(f *Field, cs []Choice, vs []string) string {
+func (t *InputSearch) Render(f *Field, cs []Choice, vs []string) template.HTML {
 	return renderInput(f.Attributes, f.Name, "search", noUseAttrs, vs)
 }

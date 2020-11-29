@@ -1,6 +1,7 @@
 package forms
 
 import (
+	"html/template"
 	"net/url"
 	"testing"
 
@@ -137,7 +138,7 @@ func TestFormOpenTag(t *testing.T) {
 	openTag := New(nil, nil).OpenTag()
 
 	assert.Len(t, openTag, 6)
-	assert.Equal(t, openTag, `<form>`)
+	assert.Equal(t, openTag, template.HTML(`<form>`))
 
 	openTag = New(
 		nil,
@@ -154,7 +155,7 @@ func TestFormOpenTag(t *testing.T) {
 func TestFormCloseTag(t *testing.T) {
 	f := New(nil, Attributes{"id": "test"})
 
-	assert.Equal(t, f.CloseTag(), "</form>")
+	assert.Equal(t, f.CloseTag(), template.HTML("</form>"))
 }
 
 func TestFormSetInitial(t *testing.T) {
